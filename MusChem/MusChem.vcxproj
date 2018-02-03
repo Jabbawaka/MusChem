@@ -18,6 +18,37 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Generic\GLogger\GLogger.c" />
+    <ClCompile Include="src\Generic\GParser\GParser.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Graphics.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Window.cpp" />
+    <ClCompile Include="src\Modules\Input\Input.cpp" />
+    <ClCompile Include="src\Systems\Systems.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Generic\GCodes.h" />
+    <ClInclude Include="src\Generic\GLheaders.h" />
+    <ClInclude Include="src\Generic\GList\GList.h" />
+    <ClInclude Include="src\Generic\GLogger\GLogger.h" />
+    <ClInclude Include="src\Generic\GParser\GParser.h" />
+    <ClInclude Include="src\Generic\GUtils.h" />
+    <ClInclude Include="src\Modules\Graphics\Camera.h" />
+    <ClInclude Include="src\Modules\Graphics\Constants.h" />
+    <ClInclude Include="src\Modules\Graphics\Graphics.h" />
+    <ClInclude Include="src\Modules\Graphics\Shader.h" />
+    <ClInclude Include="src\Modules\Graphics\SpriteSheet.h" />
+    <ClInclude Include="src\Modules\Graphics\Window.h" />
+    <ClInclude Include="src\Modules\Input\Command.h" />
+    <ClInclude Include="src\Modules\Input\Cursor.h" />
+    <ClInclude Include="src\Modules\Input\Input.h" />
+    <ClInclude Include="src\Systems\BasicModules.h" />
+    <ClInclude Include="src\Systems\DebugModules.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{EC1B7950-9A8B-41F5-B442-19472194BD38}</ProjectGuid>
@@ -69,14 +100,25 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>C:\Projects\MusChem\MusChem\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Projects\MusChem\MusChem\include;C:\Projects\MusChem\MusChem\src\;C:\Projects\MusChem\MusChem\src\Generic;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Projects\MusChem\MusChem\src\Generic;C:\Projects\MusChem\MusChem\include;C:\Projects\MusChem\MusChem\src;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Projects\MusChem\MusChem\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>portaudio_x86.lib;glfw3.lib;glew32.lib;SOIL.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,7 +126,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>glfw3.lib;glew32.lib;opengl32.lib;SOIL.lib;portaudio_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -114,8 +160,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
