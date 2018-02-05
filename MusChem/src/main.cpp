@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "portaudio.h"
 #include "GUtils.h"
+#include "GLogger/GLogger.h"
 #include "Systems/BasicModules.h"
 
 
@@ -8,8 +9,71 @@
 
 typedef struct
 {
+    float peakTime_s;
+    float sustTime_s;
+    float relTime_s;
+
+    float timePress_s;
+
+    float peakLevel;
+    float sustLevel;
+
+    float getValue(float inTime_s)
+    {
+        float value = 0.0f;
+        float time_s = inTime_s - timePress_s;
+
+        if(peakTime_s < 0.0f)
+        {
+            value = sustLevel;
+        }
+        else
+        {
+            if(time_s <= peakTime_s)
+            {
+                value = time_s / peakTime_s * peakLevel;
+            }
+            else if(time_s < peakTime_s + sustTime_s)
+            {
+                value = peakLevel + (time_s - peakTime_s) / sustTime_s * (sustLevel - peakLevel);
+            }
+            else if(time_s < peakTime_s + sustTime_s + relTime_s)
+            {
+                value = sustLevel;
+            }
+            else
+            {
+                value = sustLevel - (10 * time_s - (peakTime_s + sustTime_s + relTime_s)) * sustLevel;
+            }
+
+            if(value < 0.0f)
+            {
+                value = 0.0f;
+            }
+        }
+
+        return value;
+    }
+} envelope;
+
+typedef struct
+{
     float freq_Hz;
+    float beta;
+    float modRatio;
+
+    envelope volEnv;
+    envelope betEnv;
+    envelope modEnv;
+
     unsigned int frameTime;
+
+    void setTime()
+    {
+        volEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+        betEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+        modEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+    }
 } sineWave;
 
 
@@ -34,25 +98,39 @@ static int playSin
     float *p_out = (float *) p_outputBuffer;
 
     (void) p_inputBuffer; /* Prevent unused variable warning */
-    float wave;
+    float out;
+    int time;
+    float freq;
+    float volume;
+    float beta;
+    float ratio;
 
     for(unsigned int i = 0; i < framesPerBuffer; i++)
     {
-        wave = 0.3f * sin
-           (p_data->frameTime * 2 * PI * p_data->freq_Hz / (float) SAMPLE_RATE +
-            3 * sin(p_data->frameTime * 2 * PI * 0.75 / (float) SAMPLE_RATE));
-        if(wave > 1.0f)
+        /* ---- GET DATA FROM INPUT ---- */
+        freq = p_data->freq_Hz;
+        time = p_data->frameTime;
+        volume = p_data->volEnv.getValue((float)time / (float)SAMPLE_RATE);
+        beta = p_data->beta * p_data->betEnv.getValue((float)time / (float)SAMPLE_RATE);
+        ratio = p_data->modRatio * p_data->modEnv.getValue((float)time / (float)SAMPLE_RATE);
+
+        out = volume * sin
+           (2 * PI * freq * time / (float)SAMPLE_RATE +
+            beta * sin(0.5f * 2 * PI * time * freq / (float)SAMPLE_RATE));
+
+        if(out > 1.0f)
         {
-            wave = 1.0f;
+            out = 1.0f;
         }
-        else if(wave < -1.0f)
+        else if(out < -1.0f)
         {
-            wave = -1.0f;
+            out = -1.0f;
         }
+
         p_data->frameTime++;
 
-        *p_out++ = wave;
-        *p_out++ = wave;
+        *p_out++ = out;
+        *p_out++ = out;
     }
 
     return paContinue;
@@ -71,12 +149,38 @@ int main(int argc, char *argv[])
     }
     printf("Success!\n");
 
+    /* ---- SET UP DATA ---- */
+    /* Basic stuff */
+    sineWave data;
+    data.freq_Hz = 0.0f;
+    data.beta = 1.0f;
+    data.modRatio = 1.5f;
+    data.frameTime = 0;
+
+    /* Volume envelope */
+    data.volEnv.peakLevel = 0.8f;
+    data.volEnv.sustLevel = 0.6f;
+    data.volEnv.peakTime_s = 0.2f;
+    data.volEnv.sustTime_s = 0.2f;
+    data.volEnv.relTime_s = 1.0f;
+
+    /* Beta envelope */
+    data.betEnv.peakLevel = 1.0f;
+    data.betEnv.sustLevel = 1.0f;
+    data.betEnv.peakTime_s = 0.4f;
+    data.betEnv.sustTime_s = 0.2f;
+    data.betEnv.relTime_s = 1.0f;
+
+    /* Ratio envelope */
+    data.modEnv.peakLevel = 5.0f;
+    data.modEnv.sustLevel = 1.0f;
+    data.modEnv.peakTime_s = 0.4f;
+    data.modEnv.sustTime_s = 0.2f;
+    data.modEnv.relTime_s = 1.0f;
+
     /* Open an audio I/O stream */
     printf("Opening IO stream... ");
     PaStream *p_sinStream;
-    sineWave data;
-    data.freq_Hz = 220.0f;
-    data.frameTime = 0;
     error = Pa_OpenDefaultStream
        (&p_sinStream,
         0,           /* No input channels */
@@ -93,114 +197,151 @@ int main(int argc, char *argv[])
     }
     printf("Success!\n");
 
+    Pa_StartStream(p_sinStream);
+
     do
     {
         input.processInputs();
 
-        bool play = true;
         if(input.isKeyDown(A) == true)
         {
             data.freq_Hz = 220.0f;
+            if(input.wasKeyPressed(A) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(A_S) == true)
         {
             data.freq_Hz = 233.08f;
+            if(input.wasKeyPressed(A_S) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(B) == true)
         {
             data.freq_Hz = 246.94f;
+            if(input.wasKeyPressed(B) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(C) == true)
         {
             data.freq_Hz = 130.81f;
+            if(input.wasKeyPressed(C) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(C_S) == true)
         {
             data.freq_Hz = 138.59f;
+            if(input.wasKeyPressed(C_S) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(D) == true)
         {
             data.freq_Hz = 146.83f;
+            if(input.wasKeyPressed(D) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(D_S) == true)
         {
             data.freq_Hz = 155.56f;
+            if(input.wasKeyPressed(D_S) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(E) == true)
         {
             data.freq_Hz = 164.81f;
+            if(input.wasKeyPressed(E) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(F) == true)
         {
             data.freq_Hz = 174.61f;
+            if(input.wasKeyPressed(F) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(F_S) == true)
         {
             data.freq_Hz = 185.0f;
+            if(input.wasKeyPressed(F_S) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(G) == true)
         {
             data.freq_Hz = 196.00f;
+            if(input.wasKeyPressed(G) == true)
+            {
+                data.setTime();
+            }
         }
         else if(input.isKeyDown(G_S) == true)
         {
             data.freq_Hz = 207.65f;
-        }
-        else
-        {
-            play = false;
+            if(input.wasKeyPressed(G_S) == true)
+            {
+                data.setTime();
+            }
         }
 
+        data.beta = 0;
         if(input.isKeyDown(O0) == true)
         {
-            data.freq_Hz /= 8;
+            data.beta = 1 / 8;
         }
         else if(input.isKeyDown(O1) == true)
         {
-            data.freq_Hz /= 4;
+            data.beta = 1 / 4;
         }
         else if(input.isKeyDown(O2) == true)
         {
-            data.freq_Hz /= 4;
+            data.beta = 1/ 2;
         }
         else if(input.isKeyDown(O3) == true)
         {
-            // Do nothing
+            data.beta = 0;
         }
         else if(input.isKeyDown(O4) == true)
         {
-            data.freq_Hz *= 2;
+            data.beta = 1;
         }
         else if(input.isKeyDown(O5) == true)
         {
-            data.freq_Hz *= 4;
+            data.beta = 2;
         }
         else if(input.isKeyDown(O6) == true)
         {
-            data.freq_Hz *= 8;
+            data.beta = 3;
         }
         else if(input.isKeyDown(O7) == true)
         {
-            data.freq_Hz *= 16;
+            data.beta = 4;
         }
         else if(input.isKeyDown(O8) == true)
         {
-            data.freq_Hz *= 32;
-        }
-
-        if(play == true)
-        {
-            error = Pa_StartStream(p_sinStream);
-        }
-        else
-        {
-            data.frameTime = 0;
-            error = Pa_StopStream(p_sinStream);
+            data.beta = 5;
         }
 
     } while(input.wasKeyPressed(EXIT) == false);
 
     /* Close PortAudio */
+    Pa_StopStream(p_sinStream);
     error = Pa_CloseStream(p_sinStream);
 
     printf("Closing PortAudio... ");
