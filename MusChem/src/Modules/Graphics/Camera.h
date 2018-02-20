@@ -10,8 +10,8 @@
 
 
 // Constant definitions
-#define CAMERA_SCREEN_WIDTH (1920)
-#define CAMERA_SCREEN_HEIGHT (1080)
+#define CAMERA_SCREEN_WIDTH (427)
+#define CAMERA_SCREEN_HEIGHT (240)
 
 // Camera class:
 // This class represents a camera that holds the appropriate transformations to

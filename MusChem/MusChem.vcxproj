@@ -23,6 +23,7 @@
     <ClCompile Include="src\Generic\GParser\GParser.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Modules\Graphics\Camera.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Graph.cpp" />
     <ClCompile Include="src\Modules\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Modules\Graphics\Shader.cpp" />
     <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp" />
@@ -39,6 +40,7 @@
     <ClInclude Include="src\Generic\GUtils.h" />
     <ClInclude Include="src\Modules\Graphics\Camera.h" />
     <ClInclude Include="src\Modules\Graphics\Constants.h" />
+    <ClInclude Include="src\Modules\Graphics\Graph.h" />
     <ClInclude Include="src\Modules\Graphics\Graphics.h" />
     <ClInclude Include="src\Modules\Graphics\Shader.h" />
     <ClInclude Include="src\Modules\Graphics\SpriteSheet.h" />
