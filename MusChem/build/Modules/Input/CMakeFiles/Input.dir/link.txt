@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/srubio/Projects/MusChem/MusChem/lib/libInput.a  CMakeFiles/Input.dir/Input.cpp.o
+/usr/bin/ranlib /home/srubio/Projects/MusChem/MusChem/lib/libInput.a

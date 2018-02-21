@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/srubio/Projects/MusChem/MusChem/src/Generic/GLogger/GLogger.c
+GLogger/GLogger.h
+/home/srubio/Projects/MusChem/MusChem/src/Generic/GLogger/GLogger/GLogger.h
+stdio.h
+-
+stdarg.h
+-
+
+/home/srubio/Projects/MusChem/MusChem/src/Generic/GLogger/GLogger.h
+stdio.h
+-
+

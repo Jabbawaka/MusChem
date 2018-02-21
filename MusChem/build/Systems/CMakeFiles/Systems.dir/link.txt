@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/srubio/Projects/MusChem/MusChem/lib/libSystems.a  CMakeFiles/Systems.dir/Systems.cpp.o
+/usr/bin/ranlib /home/srubio/Projects/MusChem/MusChem/lib/libSystems.a
