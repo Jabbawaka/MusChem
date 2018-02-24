@@ -3,8 +3,8 @@
 
 
 // Project include files
-#include "Gutils.h"
-#include "GLHeaders.h"
+#include "GUtils.h"
+#include "GLheaders.h"
 
 // System include files
 #include <vector>
@@ -16,7 +16,8 @@ class Graph
         Graph();
 
         // Regular constructor
-        Graph(glm::vec2 pos_pix, glm::vec2 dim_pix, glm::vec2 xLimits, glm::vec2 yLimits);
+        Graph(glm::vec2 pos_pix, glm::vec2 dim_pix,
+              glm::vec2 xLimits, glm::vec2 yLimits);
 
         // Render graph points joined with lines
         void render(std::vector<glm::vec2> points, glm::vec3 color);

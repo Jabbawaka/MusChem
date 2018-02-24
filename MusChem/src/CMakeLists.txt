@@ -10,10 +10,11 @@ set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pthread")
 
 # Linking flags
 LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/../lib/)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/../objs/)
 
 # Set output paths
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../bin/)
-set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../lib/)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../objs/)
 
 # Define and include some useful paths
 set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR})
