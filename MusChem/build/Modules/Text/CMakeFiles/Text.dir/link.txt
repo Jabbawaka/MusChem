@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/srubio/Projects/MusChem/MusChem/lib/libText.a  
-/usr/bin/ranlib /home/srubio/Projects/MusChem/MusChem/lib/libText.a

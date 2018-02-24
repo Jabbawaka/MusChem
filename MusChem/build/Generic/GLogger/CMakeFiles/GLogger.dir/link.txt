@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/srubio/Projects/MusChem/MusChem/lib/libGLogger.a  CMakeFiles/GLogger.dir/GLogger.c.o
-/usr/bin/ranlib /home/srubio/Projects/MusChem/MusChem/lib/libGLogger.a

@@ -1,2 +1,0 @@
-/usr/bin/ar qc /home/srubio/Projects/MusChem/MusChem/lib/libGParser.a  CMakeFiles/GParser.dir/GParser.cpp.o
-/usr/bin/ranlib /home/srubio/Projects/MusChem/MusChem/lib/libGParser.a
