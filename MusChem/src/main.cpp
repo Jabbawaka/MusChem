@@ -14,6 +14,7 @@ typedef struct
     float relTime_s;
 
     float timePress_s;
+    float timeRelease_s;
 
     float peakLevel;
     float sustLevel;
@@ -73,6 +74,13 @@ typedef struct
         volEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
         betEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
         modEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+    }
+
+    void release()
+    {
+        volEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        betEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        modEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
     }
 } sineWave;
 
@@ -160,9 +168,9 @@ int main(int argc, char *argv[])
     /* Volume envelope */
     data.volEnv.peakLevel = 0.8f;
     data.volEnv.sustLevel = 0.6f;
-    data.volEnv.peakTime_s = 0.2f;
+    data.volEnv.peakTime_s = 0.8f;
     data.volEnv.sustTime_s = 0.2f;
-    data.volEnv.relTime_s = 1.0f;
+    data.volEnv.relTime_s = 0.2f;
 
     /* Beta envelope */
     data.betEnv.peakLevel = 1.0f;
@@ -298,6 +306,22 @@ int main(int argc, char *argv[])
             {
                 data.setTime();
             }
+        }
+
+        if(input.wasKeyReleased(A) == true ||
+           input.wasKeyReleased(A_S) == true ||
+           input.wasKeyReleased(B) == true ||
+           input.wasKeyReleased(C) == true ||
+           input.wasKeyReleased(C_S) == true ||
+           input.wasKeyReleased(D) == true ||
+           input.wasKeyReleased(D_S) == true ||
+           input.wasKeyReleased(E) == true ||
+           input.wasKeyReleased(F) == true ||
+           input.wasKeyReleased(F_S) == true ||
+           input.wasKeyReleased(G) == true ||
+           input.wasKeyReleased(G_S) == true)
+        {
+            data.release();
         }
 
         data.beta = 0;

@@ -62,6 +62,10 @@ class Input
         // after processInputs has been called for the frame.
         bool wasKeyPressed(ActionKey key);
 
+        // Query if key was released this frame: this function should be called
+        // after processInputs has been called for the frame.
+        bool wasKeyReleased(ActionKey key);
+
         // Query if the mouse was clicked: this function should be called after
         // processInputs has been called for the frame.
         bool wasLeftMouseClicked();

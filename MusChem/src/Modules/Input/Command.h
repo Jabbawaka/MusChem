@@ -18,6 +18,9 @@ struct Command
 
     // Is key pressed this frame?
     bool wasKeyPressed;
+
+    // Was key released this frame?
+    bool wasKeyReleased;
 };
 
 

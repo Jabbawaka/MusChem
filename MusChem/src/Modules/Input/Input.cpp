@@ -61,6 +61,7 @@ void Input::processInputs()
     for(int i = 0; i < NUM_ACTION_KEYS; i++)
     {
         _keyArray[i].wasKeyPressed = false;
+        _keyArray[i].wasKeyReleased = false;
         _leftClicked = false;
     }
 
@@ -86,6 +87,10 @@ void Input::processInputs()
                 }
                 break;
             case GLFW_RELEASE:
+                if(_keyArray[i].isKeyDown == true)
+                {
+                    _keyArray[i].wasKeyReleased = true;
+                }
                 _keyArray[i].isKeyDown = false;
                 break;
         }
@@ -142,6 +147,10 @@ bool Input::wasKeyPressed(ActionKey key)
     return _keyArray[key].wasKeyPressed;
 }
 
+bool Input::wasKeyReleased(ActionKey key)
+{
+    return _keyArray[key].wasKeyPressed;
+}
 bool Input::wasLeftMouseClicked()
 {
     return _leftClicked;
