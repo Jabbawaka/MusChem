@@ -16,41 +16,58 @@ typedef struct
     float timePress_s;
     float timeRelease_s;
 
+    bool isPressed;
+
     float peakLevel;
     float sustLevel;
+
+    float releaseLevel;
+
+    void start()
+    {
+        timePress_s = 0.0f;
+        timeRelease_s = -1.0f;
+    }
 
     float getValue(float inTime_s)
     {
         float value = 0.0f;
         float time_s = inTime_s - timePress_s;
 
-        if(peakTime_s < 0.0f)
+        if(isPressed == true)
         {
-            value = sustLevel;
-        }
-        else
-        {
-            if(time_s <= peakTime_s)
-            {
-                value = time_s / peakTime_s * peakLevel;
-            }
-            else if(time_s < peakTime_s + sustTime_s)
-            {
-                value = peakLevel + (time_s - peakTime_s) / sustTime_s * (sustLevel - peakLevel);
-            }
-            else if(time_s < peakTime_s + sustTime_s + relTime_s)
+            if(peakTime_s < 0.0f)
             {
                 value = sustLevel;
             }
             else
             {
-                value = sustLevel - (10 * time_s - (peakTime_s + sustTime_s + relTime_s)) * sustLevel;
-            }
+                if(time_s <= peakTime_s)
+                {
+                    value = time_s / peakTime_s * peakLevel;
+                }
+                else if(time_s < peakTime_s + sustTime_s)
+                {
+                    value = peakLevel + (time_s - peakTime_s) / sustTime_s * (sustLevel - peakLevel);
+                }
+                else if(time_s < peakTime_s + sustTime_s + relTime_s)
+                {
+                    value = sustLevel;
+                }
+                else
+                {
+                    value = sustLevel - (10 * time_s - (peakTime_s + sustTime_s + relTime_s)) * sustLevel;
+                }
 
-            if(value < 0.0f)
-            {
-                value = 0.0f;
+                if(value < 0.0f)
+                {
+                    value = 0.0f;
+                }
             }
+        }
+        else
+        {
+            // Do release
         }
 
         return value;
@@ -72,15 +89,21 @@ typedef struct
     void setTime()
     {
         volEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+        volEnv.isPressed = true;
         betEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+        betEnv.isPressed = true;
         modEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
+        modEnv.isPressed = true;
     }
 
     void release()
     {
         volEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        volEnv.isPressed = false;
         betEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        betEnv.isPressed = false;
         modEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        modEnv.isPressed = false;
     }
 } sineWave;
 
@@ -171,6 +194,7 @@ int main(int argc, char *argv[])
     data.volEnv.peakTime_s = 0.8f;
     data.volEnv.sustTime_s = 0.2f;
     data.volEnv.relTime_s = 0.2f;
+    data.volEnv.start();
 
     /* Beta envelope */
     data.betEnv.peakLevel = 1.0f;
@@ -178,6 +202,7 @@ int main(int argc, char *argv[])
     data.betEnv.peakTime_s = 0.4f;
     data.betEnv.sustTime_s = 0.2f;
     data.betEnv.relTime_s = 1.0f;
+    data.betEnv.start();
 
     /* Ratio envelope */
     data.modEnv.peakLevel = 5.0f;
@@ -185,6 +210,7 @@ int main(int argc, char *argv[])
     data.modEnv.peakTime_s = 0.4f;
     data.modEnv.sustTime_s = 0.2f;
     data.modEnv.relTime_s = 1.0f;
+    data.modEnv.start();
 
     /* Open an audio I/O stream */
     printf("Opening IO stream... ");

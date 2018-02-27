@@ -149,7 +149,7 @@ bool Input::wasKeyPressed(ActionKey key)
 
 bool Input::wasKeyReleased(ActionKey key)
 {
-    return _keyArray[key].wasKeyPressed;
+    return _keyArray[key].wasKeyReleased;
 }
 bool Input::wasLeftMouseClicked()
 {
