@@ -26,7 +26,7 @@ typedef struct
     void start()
     {
         timePress_s = 0.0f;
-        timeRelease_s = -1.0f;
+        timeRelease_s = 0.0f;
     }
 
     float getValue(float inTime_s)
@@ -50,13 +50,9 @@ typedef struct
                 {
                     value = peakLevel + (time_s - peakTime_s) / sustTime_s * (sustLevel - peakLevel);
                 }
-                else if(time_s < peakTime_s + sustTime_s + relTime_s)
-                {
-                    value = sustLevel;
-                }
                 else
                 {
-                    value = sustLevel - (10 * time_s - (peakTime_s + sustTime_s + relTime_s)) * sustLevel;
+                    value = sustLevel;
                 }
 
                 if(value < 0.0f)
@@ -68,6 +64,12 @@ typedef struct
         else
         {
             // Do release
+            value = (1 - (inTime_s - timeRelease_s) / 0.1f) * releaseLevel;
+
+            if(value < 0.0f)
+            {
+                value = 0.0f;
+            }
         }
 
         return value;
@@ -99,10 +101,13 @@ typedef struct
     void release()
     {
         volEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        volEnv.releaseLevel = volEnv.getValue(volEnv.timeRelease_s);
         volEnv.isPressed = false;
         betEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        betEnv.releaseLevel = betEnv.getValue(betEnv.timeRelease_s);
         betEnv.isPressed = false;
         modEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
+        modEnv.releaseLevel = modEnv.getValue(modEnv.timeRelease_s);
         modEnv.isPressed = false;
     }
 } sineWave;
