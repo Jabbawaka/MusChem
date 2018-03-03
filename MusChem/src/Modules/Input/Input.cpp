@@ -69,7 +69,7 @@ void Input::processInputs()
     glfwPollEvents();
 
     // Catch exiting window
-    if(glfwWindowShouldClose(_p_window->getGlfwWindow()) == true)
+    if(glfwWindowShouldClose(_p_window->getGlfwWindow()))
     {
         _keyArray[EXIT].wasKeyPressed = true;
     }
@@ -133,8 +133,8 @@ void Input::processInputs()
        (_p_window->getGlfwWindow(),
         &mouseXPos_pix_glob, &mouseYPos_pix_glob);
 
-    _mousePos_pix_glob.x = mouseXPos_pix_glob - (float) _p_window->getWidth() / 2.0f;
-    _mousePos_pix_glob.y = -mouseYPos_pix_glob + (float) _p_window->getHeight() / 2.0f;
+    _mousePos_pix_glob.x = (float) mouseXPos_pix_glob - (float) _p_window->getWidth() / 2.0f;
+    _mousePos_pix_glob.y = (float) -mouseYPos_pix_glob + (float) _p_window->getHeight() / 2.0f;
 }
 
 bool Input::isKeyDown(ActionKey key)

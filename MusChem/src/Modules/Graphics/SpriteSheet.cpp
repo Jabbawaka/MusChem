@@ -147,8 +147,13 @@ void SpriteSheet::render()
     glDisableVertexAttribArray(1);
 }
 
-void SpriteSheet::render(int iSprite, float xPos_pix, float yPos_pix)
+void SpriteSheet::render(int iSprite, float xPos_pix, float yPos_pix, int layerNum)
 {
+    if(layerNum == -1337)
+    {
+        layerNum = _layerNum;
+    }
+
     // Dirty hack to intercept rendering when sprite has not been loaded
     if(_loadedSpriteFlag == false)
     {
@@ -192,16 +197,16 @@ void SpriteSheet::render(int iSprite, float xPos_pix, float yPos_pix)
         (float) _height_pix;
 
     float vertices[] = {
-       -0.5f, -0.5f, (float) _layerNum / SPRITESHEET_MAX_NUM_LAYERS,
+       -0.5f, -0.5f, (float) layerNum / SPRITESHEET_MAX_NUM_LAYERS,
         uMin,  vMax,
 
-       -0.5f,  0.5f, (float) _layerNum / SPRITESHEET_MAX_NUM_LAYERS,
+       -0.5f,  0.5f, (float) layerNum / SPRITESHEET_MAX_NUM_LAYERS,
         uMin,  vMin,
 
-        0.5f, -0.5f, (float) _layerNum / SPRITESHEET_MAX_NUM_LAYERS,
+        0.5f, -0.5f, (float) layerNum / SPRITESHEET_MAX_NUM_LAYERS,
         uMax,  vMax,
 
-        0.5f,  0.5f, (float) _layerNum / SPRITESHEET_MAX_NUM_LAYERS,
+        0.5f,  0.5f, (float) layerNum / SPRITESHEET_MAX_NUM_LAYERS,
         uMax,  vMin
     };
 

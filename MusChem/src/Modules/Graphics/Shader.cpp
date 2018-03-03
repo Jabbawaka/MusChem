@@ -85,7 +85,7 @@ Shader::Shader(std::string shaderDir)
         GLOG_ERR("could not compile vertex shader: %s",
                 vertexShaderErrorMessage);
         printf("%s\n", vertexShaderErrorMessage);
-		free(vertexShaderErrorMessage);
+        free(vertexShaderErrorMessage);
         return;
     }
 
@@ -100,13 +100,13 @@ Shader::Shader(std::string shaderDir)
     glGetShaderiv(fragmentShaderId, GL_INFO_LOG_LENGTH, &infoLogLength);
     if(result == GL_FALSE)
     {
-        char *fragmentShaderErrorMessage = (char *)malloc((infoLogLength + 1) * sizeof(char));
+        char *fragmentShaderErrorMessage = (char *) malloc((infoLogLength + 1) * sizeof(char));
         glGetShaderInfoLog
            (fragmentShaderId, infoLogLength,
             NULL, &fragmentShaderErrorMessage[0]);
         GLOG_ERR("could not compile fragment shader: %s",
                 fragmentShaderErrorMessage);
-		free(fragmentShaderErrorMessage);
+        free(fragmentShaderErrorMessage);
         return;
     }
 
@@ -122,11 +122,11 @@ Shader::Shader(std::string shaderDir)
     glGetProgramiv(_programId, GL_INFO_LOG_LENGTH, &infoLogLength);
     if(result == GL_FALSE)
     {
-		char *programErrorMessage = (char *)malloc((infoLogLength + 1) * sizeof(char));
+        char *programErrorMessage = (char *)malloc((infoLogLength + 1) * sizeof(char));
 		glGetProgramInfoLog
            (_programId, infoLogLength, NULL, &programErrorMessage[0]);
         GLOG_ERR("Could not link program: %s", programErrorMessage);
-		free(programErrorMessage);
+        free(programErrorMessage);
         return;
     }
 

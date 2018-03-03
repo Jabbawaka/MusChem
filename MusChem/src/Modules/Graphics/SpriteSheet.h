@@ -49,7 +49,7 @@ class SpriteSheet
 
         // Render: renders the selected sprite in the position given, keeping
         // dimensions
-        void render(int iSprite, float xPos_pix, float yPos_pix);
+        void render(int iSprite, float xPos_pix, float yPos_pix, int layerNum = -1337);
 
         // Render error: renders a red rectangle because there is no
         // SpriteSheet loaded.

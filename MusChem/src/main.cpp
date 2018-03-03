@@ -3,76 +3,98 @@
 #include "GUtils.h"
 #include "GLogger/GLogger.h"
 #include "Systems/BasicModules.h"
+#include "Modules/Graphics/Graph.h"
+#include "Modules/Graphics/Shader.h"
+#include <vector>
 
 
 #define SAMPLE_RATE (44100)
 
 typedef struct
 {
-    float peakTime_s;
-    float sustTime_s;
-    float relTime_s;
-
+    const float _DECAY_TIME = 0.2f;
     float timePress_s;
     float timeRelease_s;
+    float releaseValue;
+    float currValue;
 
     bool isPressed;
 
-    float peakLevel;
-    float sustLevel;
+    std::vector<glm::vec2> envPoints;
+    int currNextPoint;
 
-    float releaseLevel;
-
-    void start()
+    void start(std::vector<glm::vec2> points)
     {
         timePress_s = 0.0f;
         timeRelease_s = 0.0f;
+        currValue = 0.0f;
+
+        envPoints = points;
+        currNextPoint = 1;
     }
 
-    float getValue(float inTime_s)
+    float getValue()
     {
-        float value = 0.0f;
-        float time_s = inTime_s - timePress_s;
+        return currValue;
+    }
+
+    void press(float time_s)
+    {
+        isPressed = true;
+        timePress_s = time_s;
+    }
+
+    void release(float time_s)
+    {
+        isPressed = false;
+        timeRelease_s = time_s;
+        releaseValue = currValue;
+    }
+
+    void update(float time_s)
+    {
+        // Time delta from key action
+        float timeDelta_s;
 
         if(isPressed == true)
         {
-            if(peakTime_s < 0.0f)
+            timeDelta_s = time_s - timePress_s;
+
+            if(timeDelta_s > envPoints[envPoints.size() - 1].x)
             {
-                value = sustLevel;
+                // Greater than latest point, so at sustain value
+                currNextPoint = envPoints.size() - 1;
+                currValue = envPoints[currNextPoint].y;
             }
             else
             {
-                if(time_s <= peakTime_s)
+                // Somewhtere in the middle, interpolation time
+                while(timeDelta_s > envPoints[currNextPoint].x)
                 {
-                    value = time_s / peakTime_s * peakLevel;
-                }
-                else if(time_s < peakTime_s + sustTime_s)
-                {
-                    value = peakLevel + (time_s - peakTime_s) / sustTime_s * (sustLevel - peakLevel);
-                }
-                else
-                {
-                    value = sustLevel;
+                    currNextPoint++;
                 }
 
-                if(value < 0.0f)
-                {
-                    value = 0.0f;
-                }
+                float xPrev, xNext, yPrev, yNext;
+                xPrev = envPoints[currNextPoint - 1].x;
+                yPrev = envPoints[currNextPoint - 1].y;
+                xNext = envPoints[currNextPoint].x;
+                yNext = envPoints[currNextPoint].y;
+
+                currValue = yPrev + (yNext - yPrev) * (timeDelta_s - xPrev) / (xNext - xPrev);
             }
         }
         else
         {
-            // Do release
-            value = (1 - (inTime_s - timeRelease_s) / 0.1f) * releaseLevel;
-
-            if(value < 0.0f)
-            {
-                value = 0.0f;
-            }
+            // Linearly interpolate based on decay time setting
+            timeDelta_s = time_s - timeRelease_s;
+            currValue = releaseValue * (1 - timeDelta_s / _DECAY_TIME);
+            currNextPoint = 1;
         }
 
-        return value;
+        if(currValue < 0.0f)
+        {
+            currValue = 0.0f;
+        }
     }
 } envelope;
 
@@ -90,25 +112,20 @@ typedef struct
 
     void setTime()
     {
-        volEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
-        volEnv.isPressed = true;
-        betEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
-        betEnv.isPressed = true;
-        modEnv.timePress_s = (float)frameTime / (float)SAMPLE_RATE;
-        modEnv.isPressed = true;
+        float time_s = (float)frameTime / (float)SAMPLE_RATE;
+
+        volEnv.press(time_s);
+        betEnv.press(time_s);
+        modEnv.press(time_s);
     }
 
     void release()
     {
-        volEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
-        volEnv.releaseLevel = volEnv.getValue(volEnv.timeRelease_s);
-        volEnv.isPressed = false;
-        betEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
-        betEnv.releaseLevel = betEnv.getValue(betEnv.timeRelease_s);
-        betEnv.isPressed = false;
-        modEnv.timeRelease_s = (float)frameTime / (float)SAMPLE_RATE;
-        modEnv.releaseLevel = modEnv.getValue(modEnv.timeRelease_s);
-        modEnv.isPressed = false;
+        float time_s = (float)frameTime / (float)SAMPLE_RATE;
+
+        volEnv.release(time_s);
+        betEnv.release(time_s);
+        modEnv.release(time_s);
     }
 } sineWave;
 
@@ -136,6 +153,7 @@ static int playSin
     (void) p_inputBuffer; /* Prevent unused variable warning */
     float out;
     int time;
+    float time_s;
     float freq;
     float volume;
     float beta;
@@ -146,22 +164,19 @@ static int playSin
         /* ---- GET DATA FROM INPUT ---- */
         freq = p_data->freq_Hz;
         time = p_data->frameTime;
-        volume = p_data->volEnv.getValue((float)time / (float)SAMPLE_RATE);
-        beta = p_data->beta * p_data->betEnv.getValue((float)time / (float)SAMPLE_RATE);
-        ratio = p_data->modRatio * p_data->modEnv.getValue((float)time / (float)SAMPLE_RATE);
+        
+        time_s = (float)time / (float)SAMPLE_RATE;
+        p_data->volEnv.update(time_s);
+        p_data->betEnv.update(time_s);
+        p_data->modEnv.update(time_s);
+        
+        volume = p_data->volEnv.getValue();
+        beta = p_data->beta * p_data->betEnv.getValue();
+        ratio = p_data->modRatio * p_data->modEnv.getValue();
 
         out = volume * sin
            (2 * PI * freq * time / (float)SAMPLE_RATE +
             beta * sin(0.5f * 2 * PI * time * freq / (float)SAMPLE_RATE));
-
-        if(out > 1.0f)
-        {
-            out = 1.0f;
-        }
-        else if(out < -1.0f)
-        {
-            out = -1.0f;
-        }
 
         p_data->frameTime++;
 
@@ -175,50 +190,51 @@ static int playSin
 
 int main(int argc, char *argv[])
 {
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
     /* Initialise PortAudio */
-    printf("Initialising PortAudio... ");
+    GLOG_MSG("Initialising PortAudio... ");
     PaError error = Pa_Initialize();
     if(error != paNoError)
     {
-        printf("\nCould not initialise PortAudio: %s\n", Pa_GetErrorText(error));
+        GLOG_ERR("\nCould not initialise PortAudio: %s", Pa_GetErrorText(error));
         return 1;
     }
-    printf("Success!\n");
+    GLOG_MSG("Success!");
 
     /* ---- SET UP DATA ---- */
-    /* Basic stuff */
+    /* Basic wave stuff */
     sineWave data;
     data.freq_Hz = 0.0f;
     data.beta = 1.0f;
-    data.modRatio = 1.5f;
+    data.modRatio = 0.5f;
     data.frameTime = 0;
 
     /* Volume envelope */
-    data.volEnv.peakLevel = 0.8f;
-    data.volEnv.sustLevel = 0.6f;
-    data.volEnv.peakTime_s = 0.8f;
-    data.volEnv.sustTime_s = 0.2f;
-    data.volEnv.relTime_s = 0.2f;
-    data.volEnv.start();
+    std::vector<glm::vec2> volPoints;
+    volPoints.push_back(glm::vec2(0.0f, 0.0f));
+    volPoints.push_back(glm::vec2(0.2f, 0.7f));
+    volPoints.push_back(glm::vec2(0.5f, 0.4f));
+    data.volEnv.start(volPoints);
+
+    Graph volGraph
+       (glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 150.0f),
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
 
     /* Beta envelope */
-    data.betEnv.peakLevel = 1.0f;
-    data.betEnv.sustLevel = 1.0f;
-    data.betEnv.peakTime_s = 0.4f;
-    data.betEnv.sustTime_s = 0.2f;
-    data.betEnv.relTime_s = 1.0f;
-    data.betEnv.start();
+    std::vector<glm::vec2> betaPoints;
+    betaPoints.push_back(glm::vec2(0.0f, 1.0f));
+    betaPoints.push_back(glm::vec2(0.2f, 3.0f));
+    betaPoints.push_back(glm::vec2(0.4f, 1.0f));
+    data.betEnv.start(betaPoints);
 
     /* Ratio envelope */
-    data.modEnv.peakLevel = 5.0f;
-    data.modEnv.sustLevel = 1.0f;
-    data.modEnv.peakTime_s = 0.4f;
-    data.modEnv.sustTime_s = 0.2f;
-    data.modEnv.relTime_s = 1.0f;
-    data.modEnv.start();
+    std::vector<glm::vec2> ratioPoints;
+    ratioPoints.push_back(glm::vec2(0.0f, 1.0f));
+    data.modEnv.start(ratioPoints);
 
     /* Open an audio I/O stream */
-    printf("Opening IO stream... ");
+    GLOG_MSG("Opening IO stream... ");
     PaStream *p_sinStream;
     error = Pa_OpenDefaultStream
        (&p_sinStream,
@@ -231,10 +247,10 @@ int main(int argc, char *argv[])
         &data);      /* Pointer to data passed to the callback */
     if(error != paNoError)
     {
-        printf("\nCould not open an IO stream: %s\n", Pa_GetErrorText(error));
+        GLOG_ERR("\nCould not open an IO stream: %s", Pa_GetErrorText(error));
         return 1;
     }
-    printf("Success!\n");
+    GLOG_MSG("Success!");
 
     Pa_StartStream(p_sinStream);
 
@@ -393,20 +409,54 @@ int main(int argc, char *argv[])
             data.beta = 5;
         }
 
+        // ---- RENDER ----
+        graphics.beginRender();
+
+        //volGraph.render(volPoints);
+
+        float vertices[] = {
+            0.2f, 0.0f, 0.0f,
+            0.8f, 0.0f, 0.0f,
+            0.5f, 0.8f, 0.0f
+        };
+
+        Shader *p_shader = graphics.getProgram("lines");
+        glm::mat4 totalMat = glm::mat4(1.0f);
+
+        p_shader->activate();
+;
+        GLuint matrixId = glGetUniformLocation(p_shader->getId(), "projection");
+        GLuint colorId = glGetUniformLocation(p_shader->getId(), "provColor");
+
+        glUniformMatrix4fv(matrixId, 1, GL_FALSE, &totalMat[0][0]);
+        glUniform3f(colorId, 1.0f, 0.0f, 0.0f);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer
+           (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, 1);
+        glDisableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        graphics.endRender();
+
     } while(input.wasKeyPressed(EXIT) == false);
 
     /* Close PortAudio */
     Pa_StopStream(p_sinStream);
     error = Pa_CloseStream(p_sinStream);
 
-    printf("Closing PortAudio... ");
+    GLOG_MSG("Closing PortAudio... ");
     error = Pa_Terminate();
     if(error != paNoError)
     {
-        printf("\nCould not close PortAudio: %s\n", Pa_GetErrorText(error));
+        GLOG_ERR("\nCould not close PortAudio: %s", Pa_GetErrorText(error));
         return 1;
     }
-    printf("Success!\n");
 
     return 0;
 }

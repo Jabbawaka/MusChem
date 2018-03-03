@@ -19,8 +19,11 @@ class Graph
         Graph(glm::vec2 pos_pix, glm::vec2 dim_pix,
               glm::vec2 xLimits, glm::vec2 yLimits);
 
+        // Destructor
+        ~Graph();
+
         // Render graph points joined with lines
-        void render(std::vector<glm::vec2> points, glm::vec3 color);
+        void render(std::vector<glm::vec2> points, glm::vec3 color = glm::vec3(0.0f, 0.3f, 1.0f));
 
     private:
         // Position in pixels of the bottom left corner of the graph
