@@ -22,6 +22,7 @@
     <ClCompile Include="src\Generic\GLogger\GLogger.c" />
     <ClCompile Include="src\Generic\GParser\GParser.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Modules\Audio\Envelope.cpp" />
     <ClCompile Include="src\Modules\Graphics\Camera.cpp" />
     <ClCompile Include="src\Modules\Graphics\Graph.cpp" />
     <ClCompile Include="src\Modules\Graphics\Graphics.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="src\Generic\GLogger\GLogger.h" />
     <ClInclude Include="src\Generic\GParser\GParser.h" />
     <ClInclude Include="src\Generic\GUtils.h" />
+    <ClInclude Include="src\Modules\Audio\Envelope.h" />
     <ClInclude Include="src\Modules\Graphics\Camera.h" />
     <ClInclude Include="src\Modules\Graphics\Constants.h" />
     <ClInclude Include="src\Modules\Graphics\Graph.h" />
@@ -141,7 +143,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>

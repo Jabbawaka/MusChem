@@ -214,11 +214,15 @@ int main(int argc, char *argv[])
     std::vector<glm::vec2> volPoints;
     volPoints.push_back(glm::vec2(0.0f, 0.0f));
     volPoints.push_back(glm::vec2(0.2f, 0.7f));
-    volPoints.push_back(glm::vec2(0.5f, 0.4f));
+    volPoints.push_back(glm::vec2(0.3f, 0.4f));
+    volPoints.push_back(glm::vec2(0.5f, 0.8f));
+    volPoints.push_back(glm::vec2(0.6f, 0.6f));
+    volPoints.push_back(glm::vec2(0.8f, 0.4f));
+    volPoints.push_back(glm::vec2(1.0f, 0.3f));
     data.volEnv.start(volPoints);
 
     Graph volGraph
-       (glm::vec2(0.0f, 0.0f), glm::vec2(200.0f, 150.0f),
+       (glm::vec2(-410.0f, -230.0f), glm::vec2(400.0f, 220.0f),
         glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
 
     /* Beta envelope */
@@ -412,35 +416,7 @@ int main(int argc, char *argv[])
         // ---- RENDER ----
         graphics.beginRender();
 
-        //volGraph.render(volPoints);
-
-        float vertices[] = {
-            0.2f, 0.0f, 0.0f,
-            0.8f, 0.0f, 0.0f,
-            0.5f, 0.8f, 0.0f
-        };
-
-        Shader *p_shader = graphics.getProgram("lines");
-        glm::mat4 totalMat = glm::mat4(1.0f);
-
-        p_shader->activate();
-;
-        GLuint matrixId = glGetUniformLocation(p_shader->getId(), "projection");
-        GLuint colorId = glGetUniformLocation(p_shader->getId(), "provColor");
-
-        glUniformMatrix4fv(matrixId, 1, GL_FALSE, &totalMat[0][0]);
-        glUniform3f(colorId, 1.0f, 0.0f, 0.0f);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(float), &vertices[0], GL_DYNAMIC_DRAW);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer
-           (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, 1);
-        glDisableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        volGraph.render(volPoints, glm::vec3(1.0f, 0.1f, 0.1f));
 
         graphics.endRender();
 

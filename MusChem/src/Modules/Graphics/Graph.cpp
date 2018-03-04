@@ -46,7 +46,6 @@ void Graph::render
     // ---- GET POINTS IN SCREEN FRAME ----
     std::vector<glm::vec2> pts_screen;
 
-    //GLOG_MSG("Point |  Original |   Graph   | Screen");
     for(unsigned int iPoint = 0; iPoint < points.size(); iPoint++)
     {
         // Current point
@@ -58,17 +57,15 @@ void Graph::render
         float yPos_graph =
             (point.y - _minLimits.y) / (_maxLimits.y - _minLimits.y);
 
-
         // Get point coordinates in the screen frame
         float xPos_screen = _pos_pix.x + xPos_graph * _dim_pix.x;
         float yPos_screen = _pos_pix.y + yPos_graph * _dim_pix.y;
 
-        //GLOG_MSG("%5d | %0.2f,%0.2f | %0.2f,%0.2f | %0.2f,%0.2f",
-            //iPoint + 1, point.x, point.y, xPos_graph, yPos_graph,
-            //xPos_screen, yPos_screen);
-
         pts_screen.push_back(glm::vec2(xPos_screen, yPos_screen));
     }
+    glm::vec2 lastPoint = pts_screen[pts_screen.size() - 1];
+    lastPoint.x = _pos_pix.x + _dim_pix.x;
+    pts_screen.push_back(lastPoint);
 
     // ---- DRAW FRAME ----
     float frameVertices[] = {
@@ -79,25 +76,15 @@ void Graph::render
     };
 
     Shader *p_shader = graphics.getProgram("lines");
-    glm::mat4 totalMat = glm::ortho(-640.0f, 640.0f, -512.0f, 512.0f); // graphics.getCamera().getMatrix();
-
-    /*GLOG_MSG("Matrix\n"
-        "%0.5f, %0.5f, %0.5f, %0.5f\n"
-        "%0.5f, %0.5f, %0.5f, %0.5f\n"
-        "%0.5f, %0.5f, %0.5f, %0.5f\n"
-        "%0.5f, %0.5f, %0.5f, %0.5f",
-        totalMat[0][0], totalMat[0][1], totalMat[0][2], totalMat[0][3],
-        totalMat[1][0], totalMat[1][1], totalMat[1][2], totalMat[1][3],
-        totalMat[2][0], totalMat[2][1], totalMat[2][2], totalMat[2][3],
-        totalMat[3][0], totalMat[3][1], totalMat[3][2], totalMat[3][3]);*/
+    glm::mat4 projMatrix = graphics.getCamera().getMatrix();
 
     p_shader->activate();
 
     GLuint matrixId = glGetUniformLocation(p_shader->getId(), "projection");
     GLuint colorId = glGetUniformLocation(p_shader->getId(), "provColor");
 
-    glUniformMatrix4fv(matrixId, 1, GL_FALSE, &totalMat[0][0]);
-    glUniform3f(colorId, color.r, color.g, color.b);
+    glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
+    glUniform3f(colorId, 0.2f, 0.2f, 0.2f);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -113,8 +100,8 @@ void Graph::render
 
     glDisableVertexAttribArray(0);
 
-#if 0
     // ---- DRAW LINES ----
+    //glEnable(GL_LINE_SMOOTH);
     // Create vertices
     float *lineVertices = new float[3 * pts_screen.size()];
     for(unsigned int iVert = 0; iVert < pts_screen.size(); iVert++)
@@ -125,17 +112,13 @@ void Graph::render
     }
 
     // All the OpenGL stuff
-    glm::mat4 projMatrix = graphics.getCamera().getMatrix();
+    projMatrix = graphics.getCamera().getMatrix();
 
-    if(graphics.getProgram("lines") == NULL)
-    {
-        GLOG_MSG("No lines shader found");
-    }
     GLuint progId = graphics.getProgram("lines")->getId();
     graphics.getProgram("lines")->activate();
 
-    GLuint matrixId = glGetUniformLocation(progId, "projection");
-    GLuint colorId = glGetUniformLocation(progId, "provColor");
+    matrixId = glGetUniformLocation(progId, "projection");
+    colorId = glGetUniformLocation(progId, "provColor");
     glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
     glUniform3f(colorId, color.r, color.g, color.b);
 
@@ -148,67 +131,11 @@ void Graph::render
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-    glDrawArrays(GL_LINES, 0, pts_screen.size());
+    glDrawArrays(GL_LINE_STRIP, 0, pts_screen.size());
 
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // ---- DRAW SQUARES ----
-    // Create vertices for squares
-    float *squareVertices = new float[3 * 4 * pts_screen.size()];
-    for(unsigned int iVert = 0; iVert < pts_screen.size(); iVert++)
-    {
-        // Bottom left
-        squareVertices[3 * iVert + 0] = pts_screen[iVert].x - 10.0f;
-        squareVertices[3 * iVert + 1] = pts_screen[iVert].y - 10.0f;
-        squareVertices[3 * iVert + 2] = 0.0f;
-
-        // Bottom right
-        squareVertices[3 * iVert + 3] = pts_screen[iVert].x + 10.0f;
-        squareVertices[3 * iVert + 4] = pts_screen[iVert].y - 10.0f;
-        squareVertices[3 * iVert + 5] = 0.0f;
-
-        // Top right
-        squareVertices[3 * iVert + 6] = pts_screen[iVert].x + 10.0f;
-        squareVertices[3 * iVert + 7] = pts_screen[iVert].y + 10.0f;
-        squareVertices[3 * iVert + 8] = 0.0f;
-
-        // Top left
-        squareVertices[3 * iVert + 9] = pts_screen[iVert].x - 10.0f;
-        squareVertices[3 * iVert + 10] = pts_screen[iVert].y + 10.0f;
-        squareVertices[3 * iVert + 11] = 0.0f;
-    }
-
-    // All the OpenGL stuff
-    if(graphics.getProgram("squares") == NULL)
-    {
-        GLOG_MSG("No squares shader found");
-    }
-    GLuint progId = graphics.getProgram("squares")->getId();
-    graphics.getProgram("squares")->activate();
-
-    glm::mat4 projMatrix = graphics.getCamera().getMatrix();
-
-    GLuint matrixId = glGetUniformLocation(progId, "projection");
-    GLuint colorId = glGetUniformLocation(progId, "color");
-    glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
-    glUniform3f(colorId, color.r, color.g, color.b);
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData
-       (GL_ARRAY_BUFFER,
-        3 * pts_screen.size() * sizeof(float), squareVertices,
-        GL_DYNAMIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-    glDrawArrays(GL_POINTS, 0, 4 * pts_screen.size());
-
-    glDisableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
-
-    //delete lineVertices;
-    //delete squareVertices;
+    delete lineVertices;
+    glDisable(GL_LINE_SMOOTH);
 }

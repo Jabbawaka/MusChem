@@ -29,7 +29,7 @@ Input::Input(const char *pathToFile)
     glfwSetInputMode(_p_window->getGlfwWindow(), GLFW_STICKY_KEYS, 1);
 
     // Hide cursor
-    glfwSetInputMode(_p_window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    //glfwSetInputMode(_p_window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     // Set cursor to centre of screen
     glfwSetCursorPos
