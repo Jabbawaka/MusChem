@@ -33,6 +33,7 @@ add_subdirectory(${GENERIC_DIR}/GParser)
 # Module libraries
 add_subdirectory(${MODULES_DIR}/Graphics)
 add_subdirectory(${MODULES_DIR}/Input)
+add_subdirectory(${MODULES_DIR}/Audio)
 
 # Game libraries
 add_subdirectory(${PROJECT_SOURCE_DIR}/Systems)
@@ -47,8 +48,4 @@ target_link_libraries(MusChem
     GLogger
     GParser
     Systems
-    portaudio
-    rt
-    m
-    asound
-    jack)
+    Audio)

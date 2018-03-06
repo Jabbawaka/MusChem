@@ -5,7 +5,7 @@
 #include "Systems/DebugModules.h"
 
 
-Graphics graphics(1920, 1080, "Synth", "configs/graphics.conf");
+Graphics graphics("Synth", "configs/graphics.conf");
 Input input("configs/controls.conf");
 
 bool renderPhysBoxes = false;

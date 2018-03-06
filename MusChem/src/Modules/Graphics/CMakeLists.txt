@@ -4,6 +4,7 @@ add_library(Graphics
     Shader.cpp
     SpriteSheet.cpp
     Graph.cpp
+    Slider.cpp
     Camera.cpp)
 
 if(APPLE)
