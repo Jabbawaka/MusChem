@@ -27,6 +27,7 @@
     <ClCompile Include="src\Modules\Graphics\Graph.cpp" />
     <ClCompile Include="src\Modules\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Modules\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Slider.cpp" />
     <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp" />
     <ClCompile Include="src\Modules\Graphics\Window.cpp" />
     <ClCompile Include="src\Modules\Input\Input.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\Modules\Graphics\Graph.h" />
     <ClInclude Include="src\Modules\Graphics\Graphics.h" />
     <ClInclude Include="src\Modules\Graphics\Shader.h" />
+    <ClInclude Include="src\Modules\Graphics\Slider.h" />
     <ClInclude Include="src\Modules\Graphics\SpriteSheet.h" />
     <ClInclude Include="src\Modules\Graphics\Window.h" />
     <ClInclude Include="src\Modules\Input\Command.h" />

@@ -6,6 +6,8 @@
 #include "GParser/GParser.h"
 #include "GLheaders.h"
 
+#include "Modules/Graphics/Camera.h"
+
 #include "Systems/BasicModules.h"
 
 // System include files
@@ -63,6 +65,7 @@ void Input::processInputs()
         _keyArray[i].wasKeyPressed = false;
         _keyArray[i].wasKeyReleased = false;
         _leftClicked = false;
+        _rightClicked = false;
     }
 
     // Poll all events
@@ -133,8 +136,12 @@ void Input::processInputs()
        (_p_window->getGlfwWindow(),
         &mouseXPos_pix_glob, &mouseYPos_pix_glob);
 
-    _mousePos_pix_glob.x = (float) mouseXPos_pix_glob - (float) _p_window->getWidth() / 2.0f;
-    _mousePos_pix_glob.y = (float) -mouseYPos_pix_glob + (float) _p_window->getHeight() / 2.0f;
+    _mousePos_pix_glob.x =
+        ((float) mouseXPos_pix_glob - (float) _p_window->getWidth() / 2.0f)
+        / (float) _p_window->getWidth() * CAMERA_SCREEN_WIDTH;
+    _mousePos_pix_glob.y =
+        ((float) -mouseYPos_pix_glob + (float) _p_window->getHeight() / 2.0f)
+        / (float) _p_window->getHeight() * CAMERA_SCREEN_HEIGHT;
 }
 
 bool Input::isKeyDown(ActionKey key)
@@ -151,6 +158,17 @@ bool Input::wasKeyReleased(ActionKey key)
 {
     return _keyArray[key].wasKeyReleased;
 }
+
+bool Input::isLeftMouseDown()
+{
+    return _leftDown;
+}
+
+bool Input::isRightMouseDown()
+{
+    return _rightDown;
+}
+
 bool Input::wasLeftMouseClicked()
 {
     return _leftClicked;

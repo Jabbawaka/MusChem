@@ -66,6 +66,14 @@ class Input
         // after processInputs has been called for the frame.
         bool wasKeyReleased(ActionKey key);
 
+        // Query if the left mouse button is down: this function should be called
+        // after processInputs has been called for the frame.
+        bool isLeftMouseDown();
+
+        // Query if the right mouse button is down: this function should be called
+        // after processInputs has been called for the frame.
+        bool isRightMouseDown();
+
         // Query if the mouse was clicked: this function should be called after
         // processInputs has been called for the frame.
         bool wasLeftMouseClicked();

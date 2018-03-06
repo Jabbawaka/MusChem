@@ -1,102 +1,21 @@
-#include <stdio.h>
-#include "portaudio.h"
+// Project include files
 #include "GUtils.h"
 #include "GLogger/GLogger.h"
+
 #include "Systems/BasicModules.h"
+
 #include "Modules/Graphics/Graph.h"
+#include "Modules/Graphics/Slider.h"
 #include "Modules/Graphics/Shader.h"
+#include "Modules/Audio/Envelope.h"
+
+// System include files
+#include <stdio.h>
 #include <vector>
+#include "portaudio.h"
 
 
 #define SAMPLE_RATE (44100)
-
-typedef struct
-{
-    const float _DECAY_TIME = 0.2f;
-    float timePress_s;
-    float timeRelease_s;
-    float releaseValue;
-    float currValue;
-
-    bool isPressed;
-
-    std::vector<glm::vec2> envPoints;
-    int currNextPoint;
-
-    void start(std::vector<glm::vec2> points)
-    {
-        timePress_s = 0.0f;
-        timeRelease_s = 0.0f;
-        currValue = 0.0f;
-
-        envPoints = points;
-        currNextPoint = 1;
-    }
-
-    float getValue()
-    {
-        return currValue;
-    }
-
-    void press(float time_s)
-    {
-        isPressed = true;
-        timePress_s = time_s;
-    }
-
-    void release(float time_s)
-    {
-        isPressed = false;
-        timeRelease_s = time_s;
-        releaseValue = currValue;
-    }
-
-    void update(float time_s)
-    {
-        // Time delta from key action
-        float timeDelta_s;
-
-        if(isPressed == true)
-        {
-            timeDelta_s = time_s - timePress_s;
-
-            if(timeDelta_s > envPoints[envPoints.size() - 1].x)
-            {
-                // Greater than latest point, so at sustain value
-                currNextPoint = envPoints.size() - 1;
-                currValue = envPoints[currNextPoint].y;
-            }
-            else
-            {
-                // Somewhtere in the middle, interpolation time
-                while(timeDelta_s > envPoints[currNextPoint].x)
-                {
-                    currNextPoint++;
-                }
-
-                float xPrev, xNext, yPrev, yNext;
-                xPrev = envPoints[currNextPoint - 1].x;
-                yPrev = envPoints[currNextPoint - 1].y;
-                xNext = envPoints[currNextPoint].x;
-                yNext = envPoints[currNextPoint].y;
-
-                currValue = yPrev + (yNext - yPrev) * (timeDelta_s - xPrev) / (xNext - xPrev);
-            }
-        }
-        else
-        {
-            // Linearly interpolate based on decay time setting
-            timeDelta_s = time_s - timeRelease_s;
-            currValue = releaseValue * (1 - timeDelta_s / _DECAY_TIME);
-            currNextPoint = 1;
-        }
-
-        if(currValue < 0.0f)
-        {
-            currValue = 0.0f;
-        }
-    }
-} envelope;
 
 typedef struct
 {
@@ -104,9 +23,9 @@ typedef struct
     float beta;
     float modRatio;
 
-    envelope volEnv;
-    envelope betEnv;
-    envelope modEnv;
+    Envelope volEnv;
+    Envelope betEnv;
+    Envelope modEnv;
 
     unsigned int frameTime;
 
@@ -176,7 +95,7 @@ static int playSin
 
         out = volume * sin
            (2 * PI * freq * time / (float)SAMPLE_RATE +
-            beta * sin(0.5f * 2 * PI * time * freq / (float)SAMPLE_RATE));
+            beta * sin(ratio * 2 * PI * time * freq / (float)SAMPLE_RATE));
 
         p_data->frameTime++;
 
@@ -200,15 +119,22 @@ int main(int argc, char *argv[])
         GLOG_ERR("\nCould not initialise PortAudio: %s", Pa_GetErrorText(error));
         return 1;
     }
-    GLOG_MSG("Success!");
 
     /* ---- SET UP DATA ---- */
     /* Basic wave stuff */
     sineWave data;
     data.freq_Hz = 0.0f;
-    data.beta = 1.0f;
-    data.modRatio = 0.5f;
+    data.beta = 0.0f;
+    data.modRatio = 0.0f;
     data.frameTime = 0;
+
+    // Sliders
+    Slider betSlider
+       (&data.beta,
+        glm::vec2(-190.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
+    Slider modSlider
+       (&data.modRatio,
+        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 5.0f));
 
     /* Volume envelope */
     std::vector<glm::vec2> volPoints;
@@ -219,23 +145,28 @@ int main(int argc, char *argv[])
     volPoints.push_back(glm::vec2(0.6f, 0.6f));
     volPoints.push_back(glm::vec2(0.8f, 0.4f));
     volPoints.push_back(glm::vec2(1.0f, 0.3f));
-    data.volEnv.start(volPoints);
-
-    Graph volGraph
-       (glm::vec2(-410.0f, -230.0f), glm::vec2(400.0f, 220.0f),
+    data.volEnv.setData
+       (volPoints,
+        glm::vec2(-410.0f, 120.0f), glm::vec2(200.0f, 110.0f),
         glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
 
     /* Beta envelope */
     std::vector<glm::vec2> betaPoints;
     betaPoints.push_back(glm::vec2(0.0f, 1.0f));
-    betaPoints.push_back(glm::vec2(0.2f, 3.0f));
-    betaPoints.push_back(glm::vec2(0.4f, 1.0f));
-    data.betEnv.start(betaPoints);
+    betaPoints.push_back(glm::vec2(1.0f, 1.0f));
+    data.betEnv.setData
+       (betaPoints,
+        glm::vec2(-410.0f, 0.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 4.0f));
 
     /* Ratio envelope */
     std::vector<glm::vec2> ratioPoints;
     ratioPoints.push_back(glm::vec2(0.0f, 1.0f));
-    data.modEnv.start(ratioPoints);
+    ratioPoints.push_back(glm::vec2(1.0f, 1.0f));
+    data.modEnv.setData
+       (ratioPoints,
+        glm::vec2(-410.0f, -120.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.2f));
 
     /* Open an audio I/O stream */
     GLOG_MSG("Opening IO stream... ");
@@ -254,7 +185,6 @@ int main(int argc, char *argv[])
         GLOG_ERR("\nCould not open an IO stream: %s", Pa_GetErrorText(error));
         return 1;
     }
-    GLOG_MSG("Success!");
 
     Pa_StartStream(p_sinStream);
 
@@ -375,48 +305,55 @@ int main(int argc, char *argv[])
             data.release();
         }
 
-        data.beta = 0;
         if(input.isKeyDown(O0) == true)
-        {
-            data.beta = 1 / 8;
-        }
-        else if(input.isKeyDown(O1) == true)
-        {
-            data.beta = 1 / 4;
-        }
-        else if(input.isKeyDown(O2) == true)
-        {
-            data.beta = 1/ 2;
-        }
-        else if(input.isKeyDown(O3) == true)
-        {
-            data.beta = 0;
-        }
-        else if(input.isKeyDown(O4) == true)
         {
             data.beta = 1;
         }
-        else if(input.isKeyDown(O5) == true)
+        else if(input.isKeyDown(O1) == true)
+        {
+            data.beta = 1.5;
+        }
+        else if(input.isKeyDown(O2) == true)
         {
             data.beta = 2;
         }
-        else if(input.isKeyDown(O6) == true)
+        else if(input.isKeyDown(O3) == true)
+        {
+            data.beta = 2.5;
+        }
+        else if(input.isKeyDown(O4) == true)
         {
             data.beta = 3;
         }
-        else if(input.isKeyDown(O7) == true)
+        else if(input.isKeyDown(O5) == true)
+        {
+            data.beta = 3.5;
+        }
+        else if(input.isKeyDown(O6) == true)
         {
             data.beta = 4;
+        }
+        else if(input.isKeyDown(O7) == true)
+        {
+            data.beta = 4.5;
         }
         else if(input.isKeyDown(O8) == true)
         {
             data.beta = 5;
         }
 
+        betSlider.update();
+        modSlider.update();
+
         // ---- RENDER ----
         graphics.beginRender();
 
-        volGraph.render(volPoints, glm::vec3(1.0f, 0.1f, 0.1f));
+        data.volEnv.render();
+        data.betEnv.render();
+        data.modEnv.render();
+
+        betSlider.render();
+        modSlider.render();
 
         graphics.endRender();
 
