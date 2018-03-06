@@ -1,10 +1,11 @@
 #version 330
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 0) in vec3 pos;
+
+uniform mat4 projection;
 
 void main()
 {
-    // Output position of the vertex, in clip space: MVP * position
-    gl_Position = vec4(vertexPosition_modelspace, 1);
+    gl_Position = projection * vec4(pos, 1.0);
 }

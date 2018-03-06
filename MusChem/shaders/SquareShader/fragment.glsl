@@ -5,9 +5,9 @@
 // Ouput data
 out vec4 color;
 
-uniform vec3 providedColor;
+uniform vec3 provColor;
 
 void main()
 {
-    color = vec4(providedColor.xyz, 1.0);
+    color = vec4(provColor.xyz, 1.0);
 }
