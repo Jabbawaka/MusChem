@@ -12,11 +12,8 @@
 class Graph
 {
     public:
-        // Empty constructor
-        Graph();
-
         // Regular constructor
-        Graph(std::vec<glm::vec2> *p_values,
+        Graph(std::vector<glm::vec2> &values,
               glm::vec2 pos_pix, glm::vec2 dim_pix,
               glm::vec2 xLimits, glm::vec2 yLimits);
 
@@ -54,8 +51,8 @@ class Graph
         }
 
     private:
-        // Pointer to values to be rendered
-        std::vector<glm::vec2> *_p_values;
+        // Reference to values to be rendered
+        std::vector<glm::vec2> &_values;
 
         // Position in pixels of the bottom left corner of the graph
         glm::vec2 _pos_pix;

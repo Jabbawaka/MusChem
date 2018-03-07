@@ -1,8 +1,6 @@
 // Project include files
 #include "GUtils.h"
 
-#include "Modules/Graphics/Graph.h"
-
 // System include files
 #include <vector>
 
@@ -28,11 +26,8 @@ class Envelope
         // Get current value of envelope
         float getValue();
 
-        // Render graph with envelope
-        void render();
-
-        // Get values stored
-        std::vector<glm::vec2> *getPoints();
+        // Get points of the envelope
+        std::vector<glm::vec2> &getPoints();
 
     private:
         // Decay time (maybe will be settable in the future)
@@ -54,8 +49,5 @@ class Envelope
         // Points defining the envelope
         std::vector<glm::vec2> _points;
         int _nextPoint;
-
-        // Graph for the envelope
-        Graph _graph;
 
 };

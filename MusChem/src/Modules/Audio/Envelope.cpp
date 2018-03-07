@@ -89,12 +89,7 @@ float Envelope::getValue()
     return _currValue;
 }
 
-void Envelope::render()
+std::vector<glm::vec2> &Envelope::getPoints()
 {
-    _graph.render(_points, glm::vec3(1.0f, 0.2f, 0.2f));
-}
-
-std::vector<glm::vec2> *getPoints()
-{
-    return &_points;
+    return _points;
 }

@@ -14,17 +14,10 @@
 #include <vector>
 
 
-Graph::Graph()
-{
-    _pos_pix = glm::vec2(0.0f);
-    _dim_pix = glm::vec2(0.0f);
-
-    glGenBuffers(1, &_vbo);
-}
-
 Graph::Graph
-   (glm::vec2 pos_pix, glm::vec2 dim_pix,
-    glm::vec2 minLimits, glm::vec2 maxLimits)
+   (std::vector<glm::vec2> &values,
+    glm::vec2 pos_pix, glm::vec2 dim_pix,
+    glm::vec2 minLimits, glm::vec2 maxLimits) : _values(values)
 {
     _pos_pix = pos_pix;
     _dim_pix = dim_pix;
@@ -45,10 +38,10 @@ void Graph::render
     // ---- GET POINTS IN SCREEN FRAME ----
     std::vector<glm::vec2> pts_screen;
 
-    for(unsigned int iPoint = 0; iPoint < (*_p_values).size(); iPoint++)
+    for(unsigned int iPoint = 0; iPoint < _values.size(); iPoint++)
     {
         // Current point
-        glm::vec2 point = (*points)[iPoint];
+        glm::vec2 point = _values[iPoint];
         
         // Get points coordinates in graph's frame
         float xPos_graph =
