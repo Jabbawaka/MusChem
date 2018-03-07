@@ -62,7 +62,6 @@ void Slider::update()
         if(input.isLeftMouseDown() == false)
         {
             _isControlledFlag = false;
-            GLOG_MSG("Lost control");
         }
         else
         {
@@ -88,7 +87,6 @@ void Slider::update()
             mousePos_pix.y >= sliderPos_pix.y - 2.0f)
         {
             _isControlledFlag = true;
-            GLOG_MSG("In control");
         }
     }
 }

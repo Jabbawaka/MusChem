@@ -101,7 +101,6 @@ void Graph::render
     glDisableVertexAttribArray(0);
 
     // ---- DRAW LINES ----
-    //glEnable(GL_LINE_SMOOTH);
     // Create vertices
     float *lineVertices = new float[3 * pts_screen.size()];
     for(unsigned int iVert = 0; iVert < pts_screen.size(); iVert++)
@@ -134,8 +133,51 @@ void Graph::render
     glDrawArrays(GL_LINE_STRIP, 0, pts_screen.size());
 
     glDisableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     delete lineVertices;
-    glDisable(GL_LINE_SMOOTH);
+
+    // ---- DRAW SQUARES ----
+    // Create vertices
+    float *squareVert = new float[6 * 3 * pts_screen.size()];
+    for(unsigned int iVert = 0; iVert < pts_screen.size(); iVert++)
+    {
+        squareVert[6 * 3 * iVert + 3 * 0 + 0] = pts_screen[iVert].x - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 0 + 1] = pts_screen[iVert].y - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 0 + 2] = 0.0f;
+
+        squareVert[6 * 3 * iVert + 3 * 1 + 0] = pts_screen[iVert].x - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 1 + 1] = pts_screen[iVert].y + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 1 + 2] = 0.0f;
+
+        squareVert[6 * 3 * iVert + 3 * 2 + 0] = pts_screen[iVert].x + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 2 + 1] = pts_screen[iVert].y + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 2 + 2] = 0.0f;
+
+        squareVert[6 * 3 * iVert + 3 * 3 + 0] = pts_screen[iVert].x - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 3 + 1] = pts_screen[iVert].y - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 3 + 2] = 0.0f;
+
+        squareVert[6 * 3 * iVert + 3 * 4 + 0] = pts_screen[iVert].x + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 4 + 1] = pts_screen[iVert].y - 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 4 + 2] = 0.0f;
+
+        squareVert[6 * 3 * iVert + 3 * 5 + 0] = pts_screen[iVert].x + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 5 + 1] = pts_screen[iVert].y + 2.0f;
+        squareVert[6 * 3 * iVert + 3 * 5 + 2] = 0.0f;
+    }
+
+    glBufferData
+       (GL_ARRAY_BUFFER,
+        18 * pts_screen.size() * sizeof(float), &squareVert[0],
+        GL_DYNAMIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 18 * pts_screen.size());
+
+    glDisableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    delete squareVert;
 }
