@@ -97,5 +97,5 @@ float Envelope::getValue()
 
 void Envelope::render()
 {
-    _graph.render(_points);
+    _graph.render(_points, glm::vec3(1.0f, 0.2f, 0.2f));
 }

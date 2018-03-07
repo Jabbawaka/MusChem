@@ -99,7 +99,7 @@ void Slider::render(glm::vec3 color)
         _pos_pix.x, _pos_pix.y + _length_pix, 0.0f
     };
 
-    Shader *p_shader = graphics.getProgram("lines");
+    Shader *p_shader = graphics.getProgram("primitives");
     glm::mat4 projMatrix = graphics.getCamera().getMatrix();
 
     p_shader->activate();

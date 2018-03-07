@@ -75,7 +75,7 @@ void Graph::render
         _pos_pix.x,              _pos_pix.y + _dim_pix.y, 0.0f
     };
 
-    Shader *p_shader = graphics.getProgram("lines");
+    Shader *p_shader = graphics.getProgram("primitives");
     glm::mat4 projMatrix = graphics.getCamera().getMatrix();
 
     p_shader->activate();
@@ -107,18 +107,11 @@ void Graph::render
     {
         lineVertices[3 * iVert + 0] = pts_screen[iVert].x;
         lineVertices[3 * iVert + 1] = pts_screen[iVert].y;
-        lineVertices[3 * iVert + 2] = 0.0f;
+        lineVertices[3 * iVert + 2] = 1.0f;
     }
 
     // All the OpenGL stuff
-    projMatrix = graphics.getCamera().getMatrix();
-
-    GLuint progId = graphics.getProgram("lines")->getId();
-    graphics.getProgram("lines")->activate();
-
-    matrixId = glGetUniformLocation(progId, "projection");
-    colorId = glGetUniformLocation(progId, "provColor");
-    glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
+    colorId = glGetUniformLocation(p_shader->getId(), "provColor");
     glUniform3f(colorId, color.r, color.g, color.b);
 
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -143,27 +136,27 @@ void Graph::render
     {
         squareVert[6 * 3 * iVert + 3 * 0 + 0] = pts_screen[iVert].x - 2.0f;
         squareVert[6 * 3 * iVert + 3 * 0 + 1] = pts_screen[iVert].y - 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 0 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 0 + 2] = 1.0f;
 
         squareVert[6 * 3 * iVert + 3 * 1 + 0] = pts_screen[iVert].x - 2.0f;
         squareVert[6 * 3 * iVert + 3 * 1 + 1] = pts_screen[iVert].y + 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 1 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 1 + 2] = 1.0f;
 
         squareVert[6 * 3 * iVert + 3 * 2 + 0] = pts_screen[iVert].x + 2.0f;
         squareVert[6 * 3 * iVert + 3 * 2 + 1] = pts_screen[iVert].y + 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 2 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 2 + 2] = 1.0f;
 
         squareVert[6 * 3 * iVert + 3 * 3 + 0] = pts_screen[iVert].x - 2.0f;
         squareVert[6 * 3 * iVert + 3 * 3 + 1] = pts_screen[iVert].y - 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 3 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 3 + 2] = 1.0f;
 
         squareVert[6 * 3 * iVert + 3 * 4 + 0] = pts_screen[iVert].x + 2.0f;
         squareVert[6 * 3 * iVert + 3 * 4 + 1] = pts_screen[iVert].y - 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 4 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 4 + 2] = 1.0f;
 
         squareVert[6 * 3 * iVert + 3 * 5 + 0] = pts_screen[iVert].x + 2.0f;
         squareVert[6 * 3 * iVert + 3 * 5 + 1] = pts_screen[iVert].y + 2.0f;
-        squareVert[6 * 3 * iVert + 3 * 5 + 2] = 0.0f;
+        squareVert[6 * 3 * iVert + 3 * 5 + 2] = 1.0f;
     }
 
     glBufferData
