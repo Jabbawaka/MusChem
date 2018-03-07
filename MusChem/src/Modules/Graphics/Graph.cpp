@@ -24,12 +24,54 @@ Graph::Graph
     _minLimits = minLimits;
     _maxLimits = maxLimits;
 
+    _isControlledFlag = false;
+
     glGenBuffers(1, &_vbo);
 }
 
 Graph::~Graph()
 {
     glDeleteBuffers(1, &_vbo);
+}
+
+void Graph::update()
+{
+    // Get mouse position
+    glm::vec2 mousePos_pix = input.getMousePos();
+    
+    if(_isControlledFlag == true)
+    {
+        if(input.isLeftMouseDown() == false)
+        {
+            _isControlledFlag = false;
+            _pointControlled = -1;
+        }
+        else
+        {
+        }
+    }
+    else
+    {
+        // Not currently in control, check if in control of anything
+        for(unsigned int iPoint = 0; iPoint < _values.size(); iPoint++)
+        {
+            // Get position of point in screen space
+            glm::vec2 pointPos_pix;
+            glm::vec2 pointValue = _values[iPoint];
+            pointPos_pix = _pos_pix + _dim_pix *
+               (pointValue - _minLimits) / (_maxLimits - _minLimits);
+
+            if(input.isLeftMouseDown() == true &&
+                mousePos_pix.x <= pointPos_pix.x + 2.0f &&
+                mousePos_pix.x >= pointPos_pix.x - 2.0f &&
+                mousePos_pix.y <= pointPos_pix.y + 2.0f &&
+                mousePos_pix.y >= pointPos_pix.y - 2.0f)
+            {
+                _isControlledFlag = true;
+                _pointControlled = iPoint;
+            }
+        }
+    }
 }
 
 void Graph::render

@@ -66,7 +66,8 @@ void Slider::update()
         else
         {
             *_p_value = _limits.x +
-                (mousePos_pix.y - _pos_pix.y) / _length_pix * (_limits.y - _limits.x);
+                (mousePos_pix.y - _pos_pix.y)
+                / _length_pix * (_limits.y - _limits.x);
             if(*_p_value < _limits.x)
             {
                 *_p_value = _limits.x;

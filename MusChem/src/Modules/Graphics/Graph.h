@@ -20,35 +20,11 @@ class Graph
         // Destructor
         ~Graph();
 
+        // Update, handle mouse logic here
+        void update();
+
         // Render graph points joined with lines
         void render(glm::vec3 color = glm::vec3(0.0f, 0.3f, 1.0f));
-
-        // ---- GETTERS AND SETTERS ----
-        void setPos(glm::vec2 pos_pix)
-        {
-            _pos_pix = pos_pix;
-        }
-
-        void setSize(glm::vec2 dim_pix)
-        {
-            _dim_pix = dim_pix;
-        }
-
-        void setLimits(glm::vec2 minLimits, glm::vec2 maxLimits)
-        {
-            _minLimits = minLimits;
-            _maxLimits = maxLimits;
-        }
-
-        glm::vec2 getPos()
-        {
-            return _pos_pix;
-        }
-
-        glm::vec2 getSize()
-        {
-            return _dim_pix;
-        }
 
     private:
         // Reference to values to be rendered
@@ -63,6 +39,12 @@ class Graph
         // Limits of the axis
         glm::vec2 _minLimits;
         glm::vec2 _maxLimits;
+
+        // Flag indicating whether its being controlled by the mouse
+        bool _isControlledFlag;
+
+        // Index of point being controlled
+        int _pointControlled;
 
         // Vertex Buffer Object
         GLuint _vbo;
