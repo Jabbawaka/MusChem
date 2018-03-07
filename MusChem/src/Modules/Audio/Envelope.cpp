@@ -20,16 +20,10 @@ Envelope::Envelope()
 }
 
 void Envelope::setData
-   (std::vector<glm::vec2> points,
-    glm::vec2 graphPos_pix, glm::vec2 graphSize_pix,
-    glm::vec2 graphMinLimits, glm::vec2 graphMaxLimits)
+   (std::vector<glm::vec2> points)
 {
     _points = points;
     _nextPoint = 1;
-
-    _graph.setPos(graphPos_pix);
-    _graph.setSize(graphSize_pix);
-    _graph.setLimits(graphMinLimits, graphMaxLimits);
 }
 
 void Envelope::press(float time_s)
@@ -98,4 +92,9 @@ float Envelope::getValue()
 void Envelope::render()
 {
     _graph.render(_points, glm::vec3(1.0f, 0.2f, 0.2f));
+}
+
+std::vector<glm::vec2> *getPoints()
+{
+    return &_points;
 }

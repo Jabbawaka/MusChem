@@ -16,14 +16,15 @@ class Graph
         Graph();
 
         // Regular constructor
-        Graph(glm::vec2 pos_pix, glm::vec2 dim_pix,
+        Graph(std::vec<glm::vec2> *p_values,
+              glm::vec2 pos_pix, glm::vec2 dim_pix,
               glm::vec2 xLimits, glm::vec2 yLimits);
 
         // Destructor
         ~Graph();
 
         // Render graph points joined with lines
-        void render(std::vector<glm::vec2> points, glm::vec3 color = glm::vec3(0.0f, 0.3f, 1.0f));
+        void render(glm::vec3 color = glm::vec3(0.0f, 0.3f, 1.0f));
 
         // ---- GETTERS AND SETTERS ----
         void setPos(glm::vec2 pos_pix)
@@ -53,6 +54,9 @@ class Graph
         }
 
     private:
+        // Pointer to values to be rendered
+        std::vector<glm::vec2> *_p_values;
+
         // Position in pixels of the bottom left corner of the graph
         glm::vec2 _pos_pix;
 

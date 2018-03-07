@@ -40,16 +40,15 @@ Graph::~Graph()
 }
 
 void Graph::render
-   (std::vector<glm::vec2> points,
-    glm::vec3 color)
+   (glm::vec3 color)
 {
     // ---- GET POINTS IN SCREEN FRAME ----
     std::vector<glm::vec2> pts_screen;
 
-    for(unsigned int iPoint = 0; iPoint < points.size(); iPoint++)
+    for(unsigned int iPoint = 0; iPoint < (*_p_values).size(); iPoint++)
     {
         // Current point
-        glm::vec2 point = points[iPoint];
+        glm::vec2 point = (*points)[iPoint];
         
         // Get points coordinates in graph's frame
         float xPos_graph =

@@ -14,10 +14,7 @@ class Envelope
         Envelope();
 
         // Set data for the envelope
-        void setData
-           (std::vector<glm::vec2> points,
-            glm::vec2 graphPos_pix, glm::vec2 graphSize_pix,
-            glm::vec2 graphMinLimits, glm::vec2 graphMaxLimits);
+        void setData(std::vector<glm::vec2> points);
 
         // Pressed key
         void press(float time_s);
@@ -33,6 +30,9 @@ class Envelope
 
         // Render graph with envelope
         void render();
+
+        // Get values stored
+        std::vector<glm::vec2> *getPoints();
 
     private:
         // Decay time (maybe will be settable in the future)

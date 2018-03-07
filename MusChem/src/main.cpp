@@ -128,14 +128,6 @@ int main(int argc, char *argv[])
     data.modRatio = 0.0f;
     data.frameTime = 0;
 
-    // Sliders
-    Slider betSlider
-       (&data.beta,
-        glm::vec2(-190.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
-    Slider modSlider
-       (&data.modRatio,
-        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 5.0f));
-
     /* Volume envelope */
     std::vector<glm::vec2> volPoints;
     volPoints.push_back(glm::vec2(0.0f, 0.0f));
@@ -145,28 +137,42 @@ int main(int argc, char *argv[])
     volPoints.push_back(glm::vec2(0.6f, 0.6f));
     volPoints.push_back(glm::vec2(0.8f, 0.4f));
     volPoints.push_back(glm::vec2(1.0f, 0.3f));
-    data.volEnv.setData
-       (volPoints,
-        glm::vec2(-410.0f, 120.0f), glm::vec2(200.0f, 110.0f),
-        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
+    data.volEnv.setData(volPoints);
 
     /* Beta envelope */
     std::vector<glm::vec2> betaPoints;
     betaPoints.push_back(glm::vec2(0.0f, 1.0f));
     betaPoints.push_back(glm::vec2(1.0f, 1.0f));
-    data.betEnv.setData
-       (betaPoints,
-        glm::vec2(-410.0f, 0.0f), glm::vec2(200.0f, 110.0f),
-        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 4.0f));
+    data.betEnv.setData(betaPoints);
 
     /* Ratio envelope */
     std::vector<glm::vec2> ratioPoints;
     ratioPoints.push_back(glm::vec2(0.0f, 1.0f));
     ratioPoints.push_back(glm::vec2(1.0f, 1.0f));
-    data.modEnv.setData
-       (ratioPoints,
+    data.modEnv.setData(ratioPoints);
+
+    // ---- GRAPHICS ----
+    // Sliders
+    Slider betSlider
+       (&data.beta,
+        glm::vec2(-190.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
+    Slider modSlider
+       (&data.modRatio,
+        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 5.0f));
+
+    // Graphs
+    Graph volGraph
+       (data.volEnv.getPoints(),
+        glm::vec2(-410.0f, 120.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
+    Graph betaGraph
+       (data.betEnv.getPoints(),
+        glm::vec2(-410.0f, 0.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
+    Graph ratGraph
+       (data.modEnv.getPoints(),
         glm::vec2(-410.0f, -120.0f), glm::vec2(200.0f, 110.0f),
-        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.2f));
+        glm::vec2(0.0f, 0.0f), glm::vec2(2.0f, 1.0f));
 
     /* Open an audio I/O stream */
     GLOG_MSG("Opening IO stream... ");
@@ -348,9 +354,9 @@ int main(int argc, char *argv[])
         // ---- RENDER ----
         graphics.beginRender();
 
-        data.volEnv.render();
-        data.betEnv.render();
-        data.modEnv.render();
+        volGraph.render();
+        betaGraph.render();
+        ratGraph.render();
 
         betSlider.render();
         modSlider.render();
