@@ -39,8 +39,8 @@ DiscSlider::DiscSlider
     _spacing = spacing;
 
     // Correct limits
-    int nLevels = lround((_limits.y - _limits.x) / _spacing);
-    _limits.y = _limits.x + _spacing * nLevels;
+    int nLevels = lround((_limits.y - _limits.x) / _spacing) + 1;
+    _limits.y = _limits.x + _spacing * (nLevels - 1);
 
     _isControlledFlag = false;
 
@@ -52,6 +52,53 @@ DiscSlider::~DiscSlider()
     _p_value = NULL;
 
     glDeleteBuffers(1, &_vbo);
+}
+
+void DiscSlider::update()
+{
+    // Get mouse position
+    glm::vec2 mousePos_pix = input.getMousePos();
+
+    // Get slider current position
+    glm::vec2 sliderPos_pix;
+    sliderPos_pix.x = _pos_pix.x;
+    sliderPos_pix.y = _pos_pix.y +
+        _length_pix * (*_p_value - _limits.x) / (_limits.y - _limits.x);
+
+    if(_isControlledFlag == true)
+    {
+        if(input.isLeftMouseDown() == false)
+        {
+            _isControlledFlag = false;
+        }
+        else
+        {
+            int nLevels = (_limits.y - _limits.x) / _spacing + 1;
+
+            for(int iLev = 0; iLev < nLevels; iLev++)
+            {
+                float levPos_pix =
+                    _pos_pix.y +
+                    _length_pix * (float) iLev / ((float) nLevels - 1);
+                if(fabs(mousePos_pix.y - levPos_pix) < 5.0f)
+                {
+                    *_p_value = _limits.x + iLev * _spacing;
+                }
+            }
+        }
+    }
+    else
+    {
+        // Not currently in control of the mouse, check if should be in control
+        if(input.wasLeftMousePressed() == true &&
+            mousePos_pix.x <= sliderPos_pix.x + 12.0f &&
+            mousePos_pix.x >= sliderPos_pix.x - 12.0f &&
+            mousePos_pix.y <= sliderPos_pix.y + 4.0f &&
+            mousePos_pix.y >= sliderPos_pix.y - 4.0f)
+        {
+            _isControlledFlag = true;
+        }
+    }
 }
 
 void DiscSlider::render(glm::vec3 color)
@@ -88,7 +135,7 @@ void DiscSlider::render(glm::vec3 color)
     glDisableVertexAttribArray(0);
 
     // ---- DRAW LEVELS ----
-    int numLevels = (_limits.y - _limits.x) / _spacing;
+    int numLevels = (_limits.y - _limits.x) / _spacing + 1;
     float *levelVert = new float[2 * 3 * numLevels];
     for(int iLev = 0; iLev < numLevels; iLev++)
     {

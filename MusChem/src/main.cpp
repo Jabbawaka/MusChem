@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
         }
 
         betSlider.update();
-        //modSlider.update();
+        modSlider.update();
 
         volGraph.update();
         betaGraph.update();

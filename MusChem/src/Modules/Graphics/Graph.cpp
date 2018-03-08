@@ -116,9 +116,6 @@ void Graph::update()
                 else
                 {
                     // Add new point
-                    unsigned int i = 0;
-                    glm::vec2 cosa = glm::vec2(0.0f, 0.0f);
-                    _values.insert(_values.begin() + i, cosa);
                 }
             }
         }
