@@ -48,7 +48,7 @@ void Envelope::update(float time_s)
     {
         timeDelta_s = time_s - _timePress_s;
 
-        if(timeDelta_s > _points[_points.size() - 1].x)
+        if(timeDelta_s > _points[_points.size() - 2].x)
         {
             // Greater than latest point, output sustain value
             _nextPoint = _points.size() - 1;

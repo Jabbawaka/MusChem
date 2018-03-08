@@ -48,6 +48,48 @@ void Graph::update()
         }
         else
         {
+            // First and last points are special, move only y
+            if(_pointControlled == 0 || _pointControlled == _values.size() - 1)
+            {
+                _values[_pointControlled].y = _minLimits.y +
+                   (mousePos_pix.y - _pos_pix.y) / _dim_pix.y *
+                   (_maxLimits.y - _minLimits.y);
+                if(_values[_pointControlled].y < _minLimits.y)
+                {
+                    _values[_pointControlled].y = _minLimits.y;
+                }
+                else if(_values[_pointControlled].y > _maxLimits.y)
+                {
+                    _values[_pointControlled].y = _maxLimits.y;
+                }
+            }
+            else
+            {
+                // Get previous and next points
+                glm::vec2 prevPoint = _values[_pointControlled - 1];
+                glm::vec2 nextPoint = _values[_pointControlled + 1];
+
+                _values[_pointControlled] = _minLimits +
+                   (mousePos_pix - _pos_pix) / _dim_pix *
+                   (_maxLimits - _minLimits);
+                if(_values[_pointControlled].x < prevPoint.x)
+                {
+                    _values[_pointControlled].x = prevPoint.x + 0.001f;
+                }
+                else if(_values[_pointControlled].x > nextPoint.x)
+                {
+                    _values[_pointControlled].x = nextPoint.x - 0.001f;
+                }
+
+                if(_values[_pointControlled].y < _minLimits.y)
+                {
+                    _values[_pointControlled].y = _minLimits.y;
+                }
+                else if(_values[_pointControlled].y > _maxLimits.y)
+                {
+                    _values[_pointControlled].y = _maxLimits.y;
+                }
+            }
         }
     }
     else
@@ -61,14 +103,23 @@ void Graph::update()
             pointPos_pix = _pos_pix + _dim_pix *
                (pointValue - _minLimits) / (_maxLimits - _minLimits);
 
-            if(input.isLeftMouseDown() == true &&
-                mousePos_pix.x <= pointPos_pix.x + 2.0f &&
-                mousePos_pix.x >= pointPos_pix.x - 2.0f &&
-                mousePos_pix.y <= pointPos_pix.y + 2.0f &&
-                mousePos_pix.y >= pointPos_pix.y - 2.0f)
+            if(input.wasLeftMousePressed() == true)
             {
-                _isControlledFlag = true;
-                _pointControlled = iPoint;
+                if(mousePos_pix.x <= pointPos_pix.x + 4.0f &&
+                   mousePos_pix.x >= pointPos_pix.x - 4.0f &&
+                   mousePos_pix.y <= pointPos_pix.y + 4.0f &&
+                   mousePos_pix.y >= pointPos_pix.y - 4.0f)
+                {
+                    _isControlledFlag = true;
+                    _pointControlled = iPoint;
+                }
+                else
+                {
+                    // Add new point
+                    unsigned int i = 0;
+                    glm::vec2 cosa = glm::vec2(0.0f, 0.0f);
+                    _values.insert(_values.begin() + i, cosa);
+                }
             }
         }
     }
@@ -97,9 +148,6 @@ void Graph::render
 
         pts_screen.push_back(glm::vec2(xPos_screen, yPos_screen));
     }
-    glm::vec2 lastPoint = pts_screen[pts_screen.size() - 1];
-    lastPoint.x = _pos_pix.x + _dim_pix.x;
-    pts_screen.push_back(lastPoint);
 
     // ---- DRAW FRAME ----
     float frameVertices[] = {

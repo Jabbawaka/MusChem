@@ -74,6 +74,14 @@ class Input
         // after processInputs has been called for the frame.
         bool isRightMouseDown();
 
+        // Query if the mouse was pressed: this function should be called after
+        // processInputs has been called for the frame.
+        bool wasLeftMousePressed();
+
+        // Query if the mouse was pressed: this function should be called after
+        // processInputs has been called for the frame.
+        bool wasRightMousePressed();
+
         // Query if the mouse was clicked: this function should be called after
         // processInputs has been called for the frame.
         bool wasLeftMouseClicked();
@@ -105,8 +113,10 @@ class Input
         glm::vec2 _mousePos_pix_glob;
         bool _leftClicked;
         bool _leftDown;
+        bool _leftPressed;
         bool _rightClicked;
         bool _rightDown;
+        bool _rightPressed;
 
 };
 

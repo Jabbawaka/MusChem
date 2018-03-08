@@ -5,6 +5,7 @@ add_library(Graphics
     SpriteSheet.cpp
     Graph.cpp
     Slider.cpp
+    DiscSlider.cpp
     Camera.cpp)
 
 if(APPLE)

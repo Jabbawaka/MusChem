@@ -30,9 +30,6 @@ Input::Input(const char *pathToFile)
     // Initialise GLFW input
     glfwSetInputMode(_p_window->getGlfwWindow(), GLFW_STICKY_KEYS, 1);
 
-    // Hide cursor
-    //glfwSetInputMode(_p_window->getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
     // Set cursor to centre of screen
     glfwSetCursorPos
        (_p_window->getGlfwWindow(),
@@ -65,7 +62,9 @@ void Input::processInputs()
         _keyArray[i].wasKeyPressed = false;
         _keyArray[i].wasKeyReleased = false;
         _leftClicked = false;
+        _leftPressed = false;
         _rightClicked = false;
+        _rightPressed = false;
     }
 
     // Poll all events
@@ -103,6 +102,10 @@ void Input::processInputs()
     if(glfwGetMouseButton
        (_p_window->getGlfwWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        if(_leftDown == false)
+        {
+            _leftPressed = true;
+        }
         _leftDown = true;
     }
     else if(glfwGetMouseButton
@@ -118,6 +121,10 @@ void Input::processInputs()
     if(glfwGetMouseButton
        (_p_window->getGlfwWindow(), GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
     {
+        if(_rightDown == false)
+        {
+            _rightPressed = true;
+        }
         _rightDown = true;
     }
     else if(glfwGetMouseButton
@@ -169,6 +176,15 @@ bool Input::isRightMouseDown()
     return _rightDown;
 }
 
+bool Input::wasLeftMousePressed()
+{
+    return _leftPressed;
+}
+
+bool Input::wasRightMousePressed()
+{
+    return _rightPressed;
+}
 bool Input::wasLeftMouseClicked()
 {
     return _leftClicked;

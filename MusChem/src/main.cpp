@@ -6,6 +6,7 @@
 
 #include "Modules/Graphics/Graph.h"
 #include "Modules/Graphics/Slider.h"
+#include "Modules/Graphics/DiscSlider.h"
 #include "Modules/Graphics/Shader.h"
 #include "Modules/Audio/Envelope.h"
 
@@ -156,9 +157,9 @@ int main(int argc, char *argv[])
     Slider betSlider
        (&data.beta,
         glm::vec2(-190.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
-    Slider modSlider
+    DiscSlider modSlider
        (&data.modRatio,
-        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 5.0f));
+        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 5.0f), 1.0f);
 
     // Graphs
     Graph volGraph
@@ -349,7 +350,11 @@ int main(int argc, char *argv[])
         }
 
         betSlider.update();
-        modSlider.update();
+        //modSlider.update();
+
+        volGraph.update();
+        betaGraph.update();
+        ratGraph.update();
 
         // ---- RENDER ----
         graphics.beginRender();
