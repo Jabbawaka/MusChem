@@ -12,30 +12,17 @@ class Envelope
         Envelope();
 
         // Set data for the envelope
-        void setData(std::vector<glm::vec2> points);
-
-        // Pressed key
-        void press(float time_s);
-
-        // Released key
-        void release(float time_s);
-
-        // Update status of envelope
-        void update(float time_s);
+        void setData(std::vector<glm::vec2> points, float decayTime_s);
 
         // Get current value of envelope
-        float getValue();
+        float getValue(float timeDelta_s, bool pressed);
 
         // Get points of the envelope
         std::vector<glm::vec2> &getPoints();
 
     private:
         // Decay time (maybe will be settable in the future)
-        const float _DECAY_TIME = 0.2f;
-
-        // Times of press and release
-        float _timePress_s;
-        float _timeRelease_s;
+        float _decay_s;
 
         // Value at release
         float _releaseValue;

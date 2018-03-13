@@ -94,6 +94,7 @@ void Graph::update()
     }
     else
     {
+        bool anyPressed = false;
         // Not currently in control, check if in control of anything
         for(unsigned int iPoint = 0; iPoint < _values.size(); iPoint++)
         {
@@ -112,10 +113,49 @@ void Graph::update()
                 {
                     _isControlledFlag = true;
                     _pointControlled = iPoint;
+                    anyPressed = true;
                 }
-                else
+            }
+            else if(input.wasRightMousePressed() == true)
+            {
+                if(mousePos_pix.x <= pointPos_pix.x + 4.0f &&
+                   mousePos_pix.x >= pointPos_pix.x - 4.0f &&
+                   mousePos_pix.y <= pointPos_pix.y + 4.0f &&
+                   mousePos_pix.y >= pointPos_pix.y - 4.0f)
                 {
-                    // Add new point
+                    if(iPoint != 0 && iPoint != _values.size() - 1)
+                    {
+                        _values.erase(_values.begin() + iPoint);
+                    }
+                }
+            }
+        }
+
+        if(anyPressed == false)
+        {
+            // Check if pressed in graph but not on point
+            if(input.wasLeftMousePressed() == true)
+            {
+                for(unsigned int iPoint = 0; iPoint < _values.size() - 1; iPoint++)
+                {
+                    glm::vec2 prevPointPos_pix = _pos_pix + _dim_pix *
+                       (_values[iPoint] - _minLimits) / (_maxLimits - _minLimits);
+                    glm::vec2 nextPointPos_pix = _pos_pix + _dim_pix *
+                       (_values[iPoint + 1] - _minLimits) / (_maxLimits - _minLimits);
+
+                    if(mousePos_pix.x > prevPointPos_pix.x &&
+                        mousePos_pix.x < nextPointPos_pix.x &&
+                        mousePos_pix.y > _pos_pix.y &&
+                        mousePos_pix.y < _pos_pix.y + _dim_pix.y)
+                    {
+                        glm::vec2 mouseValue =
+                            _minLimits +
+                            (mousePos_pix - _pos_pix) / _dim_pix * (_maxLimits - _minLimits);
+                        _values.insert(_values.begin() + iPoint + 1, mouseValue);
+                        _pointControlled = iPoint + 1;
+                        _isControlledFlag = true;
+                        break;
+                    }
                 }
             }
         }

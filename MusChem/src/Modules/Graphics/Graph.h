@@ -24,7 +24,7 @@ class Graph
         void update();
 
         // Render graph points joined with lines
-        void render(glm::vec3 color = glm::vec3(0.0f, 0.3f, 1.0f));
+        void render(glm::vec3 color = glm::vec3(0.7f, 0.7f, 0.7f));
 
     private:
         // Reference to values to be rendered

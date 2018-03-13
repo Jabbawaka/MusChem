@@ -10,8 +10,6 @@
 
 Envelope::Envelope()
 {
-    _timePress_s = 0.0f;
-    _timeRelease_s = 0.0f;
     _currValue = 0.0f;
 
     _points.push_back(glm::vec2(0.0f, 0.0f));
@@ -20,34 +18,17 @@ Envelope::Envelope()
 }
 
 void Envelope::setData
-   (std::vector<glm::vec2> points)
+   (std::vector<glm::vec2> points, float decayTime_s)
 {
     _points = points;
     _nextPoint = 1;
+    _decay_s = decayTime_s;
 }
 
-void Envelope::press(float time_s)
+float Envelope::getValue(float timeDelta_s, bool pressed)
 {
-    _timePress_s = time_s;
-    _isPressedFlag = true;
-}
-
-void Envelope::release(float time_s)
-{
-    _timeRelease_s = time_s;
-    _isPressedFlag = false;
-    _releaseValue = _currValue;
-}
-
-void Envelope::update(float time_s)
-{
-    // Time delta from key action
-    float timeDelta_s;
-
-    if(_isPressedFlag == true)
+    if(pressed == true)
     {
-        timeDelta_s = time_s - _timePress_s;
-
         if(timeDelta_s > _points[_points.size() - 2].x)
         {
             // Greater than latest point, output sustain value
@@ -73,19 +54,10 @@ void Envelope::update(float time_s)
     else
     {
         // Linearly interpolate based on decay time setting
-        timeDelta_s = time_s - _timeRelease_s;
-        _currValue = _releaseValue * (1 - timeDelta_s / _DECAY_TIME);
+        _currValue = _releaseValue * (1 - timeDelta_s / _decay_s);
         _nextPoint = 1;
     }
 
-    if(_currValue < 0.0f)
-    {
-        _currValue = 0.0f;
-    }
-}
-
-float Envelope::getValue()
-{
     return _currValue;
 }
 
