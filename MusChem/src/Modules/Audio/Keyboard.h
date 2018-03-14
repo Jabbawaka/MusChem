@@ -51,8 +51,8 @@ struct Key
     // Release key
     void release(int time_frame)
     {
-        _timeRelease_frame = time_frame;
         _isPressedFlag = false;
+        _timeRelease_frame = time_frame;
     }
 };
 
