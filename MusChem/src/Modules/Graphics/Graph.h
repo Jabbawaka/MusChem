@@ -25,7 +25,10 @@ class Graph
         void update();
 
         // Render graph points joined with lines
-        void render(glm::vec3 color = glm::vec3(0.7f, 0.7f, 0.7f));
+        void render(glm::vec3 color = glm::vec3(0.7f));
+
+        // Render vertical line
+        void renderVert(float xValue, glm::vec3 color = glm::vec3(0.9f));
 
     private:
         // Reference to values to be rendered

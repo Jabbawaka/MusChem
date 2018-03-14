@@ -230,6 +230,22 @@ int main(int argc, char *argv[])
         // ---- RENDER ----
         graphics.beginRender();
 
+        for(unsigned int iKey = 0; iKey < keyboard.getKeys().size(); iKey++)
+        {
+            Key key = keyboard.getKeys()[iKey];
+            if(key._isPressedFlag == true)
+            {
+                float xTime_s =
+                    (float)(data.frameTime - key._timePress_frame) /
+                    (float)SAMPLE_RATE;
+                if(xTime_s > 1.0f)
+                {
+                    xTime_s = 1.0f;
+                }
+                volGraph.renderVert(xTime_s);
+                betaGraph.renderVert(xTime_s);
+            }
+        }
         volGraph.render(glm::vec3(0.2f, 0.5f, 0.2f));
         betaGraph.render(glm::vec3(0.2f, 0.5f, 0.2f));
 
