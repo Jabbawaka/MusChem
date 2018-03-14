@@ -15,7 +15,8 @@ class Graph
         // Regular constructor
         Graph(std::vector<glm::vec2> &values,
               glm::vec2 pos_pix, glm::vec2 dim_pix,
-              glm::vec2 xLimits, glm::vec2 yLimits);
+              glm::vec2 xLimits, glm::vec2 yLimits,
+              glm::vec2 spacing);
 
         // Destructor
         ~Graph();
@@ -39,6 +40,9 @@ class Graph
         // Limits of the axis
         glm::vec2 _minLimits;
         glm::vec2 _maxLimits;
+
+        // Spacing of the axis
+        glm::vec2 _spacing;
 
         // Flag indicating whether its being controlled by the mouse
         bool _isControlledFlag;

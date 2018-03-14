@@ -185,11 +185,13 @@ int main(int argc, char *argv[])
     Graph volGraph
        (data.volEnv.getPoints(),
         glm::vec2(-410.0f, 120.0f), glm::vec2(200.0f, 110.0f),
-        glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
+        glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+        glm::vec2(0.2f, 0.25f));
     Graph betaGraph
        (data.betEnv.getPoints(),
         glm::vec2(-410.0f, 0.0f), glm::vec2(200.0f, 110.0f),
-        glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f));
+        glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+        glm::vec2(0.2f, 0.25f));
 
     // Open an audio I/O stream
     GLOG_MSG("Opening IO stream... ");
@@ -228,8 +230,8 @@ int main(int argc, char *argv[])
         // ---- RENDER ----
         graphics.beginRender();
 
-        volGraph.render();
-        betaGraph.render();
+        volGraph.render(glm::vec3(0.2f, 0.5f, 0.2f));
+        betaGraph.render(glm::vec3(0.2f, 0.5f, 0.2f));
 
         betSlider.render();
         numModSlider.render();

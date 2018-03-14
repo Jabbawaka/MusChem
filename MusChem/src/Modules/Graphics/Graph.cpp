@@ -17,12 +17,14 @@
 Graph::Graph
    (std::vector<glm::vec2> &values,
     glm::vec2 pos_pix, glm::vec2 dim_pix,
-    glm::vec2 minLimits, glm::vec2 maxLimits) : _values(values)
+    glm::vec2 minLimits, glm::vec2 maxLimits,
+    glm::vec2 spacing) : _values(values)
 {
     _pos_pix = pos_pix;
     _dim_pix = dim_pix;
     _minLimits = minLimits;
     _maxLimits = maxLimits;
+    _spacing = spacing;
 
     _isControlledFlag = false;
 
@@ -49,7 +51,7 @@ void Graph::update()
         else
         {
             // First and last points are special, move only y
-            if(_pointControlled == 0 || _pointControlled == _values.size() - 1)
+            if(_pointControlled == 0 || _pointControlled == (int)_values.size() - 1)
             {
                 _values[_pointControlled].y = _minLimits.y +
                    (mousePos_pix.y - _pos_pix.y) / _dim_pix.y *
@@ -203,7 +205,7 @@ void Graph::render
     GLuint colorId = glGetUniformLocation(p_shader->getId(), "provColor");
 
     glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
-    glUniform3f(colorId, 0.2f, 0.2f, 0.2f);
+    glUniform3f(colorId, 0.4f, 0.4f, 0.4f);
 
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -216,6 +218,60 @@ void Graph::render
        (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
     glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+    glDisableVertexAttribArray(0);
+
+    // ---- DRAW SPACING ----
+    glm::vec2 lines = (_maxLimits - _minLimits) / _spacing;
+    int horLines = ceil(lines.y - 1);
+    int verLines = ceil(lines.x - 1);
+    float *spaceVert = new float[3 * 2 * horLines * verLines];
+
+    for(int iHor = 0; iHor < horLines; iHor++)
+    {
+        spaceVert[6 * iHor + 0] = _pos_pix.x;
+        spaceVert[6 * iHor + 1] = _pos_pix.y + _dim_pix.y *
+           ((iHor + 1) * _spacing.y + _minLimits.y) /
+            (_maxLimits.y - _minLimits.y);
+        spaceVert[6 * iHor + 2] = 0.1f;
+
+        spaceVert[6 * iHor + 3] = _pos_pix.x + _dim_pix.x;
+        spaceVert[6 * iHor + 4] = _pos_pix.y + _dim_pix.y *
+           ((iHor + 1) * _spacing.y + _minLimits.y) /
+            (_maxLimits.y - _minLimits.y);
+        spaceVert[6 * iHor + 5] = 0.1f;
+    }
+    for(int iVer = 0; iVer < verLines; iVer++)
+    {
+        spaceVert[6 * horLines + 6 * iVer + 0] =
+            _pos_pix.x + _dim_pix.x *
+            ((iVer + 1) * _spacing.x + _minLimits.x) /
+            (_maxLimits.x - _minLimits.x);
+        spaceVert[6 * horLines + 6 * iVer + 1] = _pos_pix.y;
+        spaceVert[6 * horLines + 6 * iVer + 2] = 0.1f;
+
+        spaceVert[6 * horLines + 6 * iVer + 3] =
+            _pos_pix.x + _dim_pix.x *
+            ((iVer + 1) * _spacing.x + _minLimits.x) /
+            (_maxLimits.x - _minLimits.x);
+        spaceVert[6 * horLines + 6 * iVer + 4] = _pos_pix.y + _dim_pix.y;
+        spaceVert[6 * horLines + 6 * iVer + 5] = 0.1f;
+    }
+
+    glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
+    glUniform3f(colorId, 0.2f, 0.2f, 0.2f);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferData
+       (GL_ARRAY_BUFFER,
+        6 * horLines * verLines * sizeof(float), &spaceVert[0],
+        GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer
+       (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+    glDrawArrays(GL_LINES, 0, 2 * horLines * verLines);
 
     glDisableVertexAttribArray(0);
 

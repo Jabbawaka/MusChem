@@ -1,5 +1,6 @@
 add_library(Audio
-    Envelope.cpp)
+    Envelope.cpp
+    Keyboard.cpp)
 
 target_link_libraries(Audio
     portaudio
