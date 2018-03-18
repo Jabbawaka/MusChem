@@ -60,6 +60,9 @@
     <ClCompile Include="src\Modules\Audio\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Modules\Graphics\Switch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Generic\GCodes.h">
@@ -126,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Modules\Audio\Keyboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Modules\Graphics\Switch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

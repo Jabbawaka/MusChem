@@ -25,7 +25,7 @@ Slider::Slider(float *p_value)
 }
 
 Slider::Slider
-   (float *p_value,
+   (float *p_value, bool resetFlag,
     glm::vec2 pos_pix, float length_pix, glm::vec2 limits)
 {
     _p_value = p_value;
@@ -35,6 +35,7 @@ Slider::Slider
     _limits = limits;
 
     _isControlledFlag = false;
+    _resetOnLeaveFlag = resetFlag;
 
     glGenBuffers(1, &_vbo);
 }
@@ -88,6 +89,13 @@ void Slider::update()
             mousePos_pix.y >= sliderPos_pix.y - 4.0f)
         {
             _isControlledFlag = true;
+        }
+        else
+        {
+            if(_resetOnLeaveFlag == true)
+            {
+                *_p_value = (_limits.x + _limits.y) / 2.0f;
+            }
         }
     }
 }
@@ -151,7 +159,7 @@ void Slider::render(glm::vec3 color)
     glVertexAttribPointer
        (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 18);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glDisableVertexAttribArray(0);
 }

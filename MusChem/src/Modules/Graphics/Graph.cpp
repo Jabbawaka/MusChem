@@ -190,10 +190,10 @@ void Graph::render
 
     // ---- DRAW FRAME ----
     float frameVertices[] = {
-        _pos_pix.x,              _pos_pix.y,              0.0f,
-        _pos_pix.x + _dim_pix.x, _pos_pix.y,              0.0f,
-        _pos_pix.x + _dim_pix.x, _pos_pix.y + _dim_pix.y, 0.0f,
-        _pos_pix.x,              _pos_pix.y + _dim_pix.y, 0.0f
+        _pos_pix.x,              _pos_pix.y,              0.1f,
+        _pos_pix.x + _dim_pix.x, _pos_pix.y,              0.1f,
+        _pos_pix.x + _dim_pix.x, _pos_pix.y + _dim_pix.y, 0.1f,
+        _pos_pix.x,              _pos_pix.y + _dim_pix.y, 0.1f
     };
 
     Shader *p_shader = graphics.getProgram("primitives");
@@ -233,13 +233,13 @@ void Graph::render
         spaceVert[6 * iHor + 1] = _pos_pix.y + _dim_pix.y *
            ((iHor + 1) * _spacing.y + _minLimits.y) /
             (_maxLimits.y - _minLimits.y);
-        spaceVert[6 * iHor + 2] = 0.1f;
+        spaceVert[6 * iHor + 2] = 0.0f;
 
         spaceVert[6 * iHor + 3] = _pos_pix.x + _dim_pix.x;
         spaceVert[6 * iHor + 4] = _pos_pix.y + _dim_pix.y *
            ((iHor + 1) * _spacing.y + _minLimits.y) /
             (_maxLimits.y - _minLimits.y);
-        spaceVert[6 * iHor + 5] = 0.1f;
+        spaceVert[6 * iHor + 5] = 0.0f;
     }
     for(int iVer = 0; iVer < verLines; iVer++)
     {
@@ -248,14 +248,14 @@ void Graph::render
             ((iVer + 1) * _spacing.x + _minLimits.x) /
             (_maxLimits.x - _minLimits.x);
         spaceVert[6 * horLines + 6 * iVer + 1] = _pos_pix.y;
-        spaceVert[6 * horLines + 6 * iVer + 2] = 0.1f;
+        spaceVert[6 * horLines + 6 * iVer + 2] = 0.0f;
 
         spaceVert[6 * horLines + 6 * iVer + 3] =
             _pos_pix.x + _dim_pix.x *
             ((iVer + 1) * _spacing.x + _minLimits.x) /
             (_maxLimits.x - _minLimits.x);
         spaceVert[6 * horLines + 6 * iVer + 4] = _pos_pix.y + _dim_pix.y;
-        spaceVert[6 * horLines + 6 * iVer + 5] = 0.1f;
+        spaceVert[6 * horLines + 6 * iVer + 5] = 0.0f;
     }
 
     glUniformMatrix4fv(matrixId, 1, GL_FALSE, &projMatrix[0][0]);
@@ -265,13 +265,13 @@ void Graph::render
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     glBufferData
        (GL_ARRAY_BUFFER,
-        6 * horLines * verLines * sizeof(float), &spaceVert[0],
+        6 * (horLines + verLines) * sizeof(float), &spaceVert[0],
         GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer
        (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-    glDrawArrays(GL_LINES, 0, 2 * horLines * verLines);
+    glDrawArrays(GL_LINES, 0, 2 * (horLines + verLines));
 
     glDisableVertexAttribArray(0);
 
@@ -342,7 +342,7 @@ void Graph::render
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 18 * pts_screen.size());
+    glDrawArrays(GL_TRIANGLES, 0, 6 * pts_screen.size());
 
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

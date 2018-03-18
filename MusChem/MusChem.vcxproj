@@ -31,6 +31,7 @@
     <ClCompile Include="src\Modules\Graphics\Shader.cpp" />
     <ClCompile Include="src\Modules\Graphics\Slider.cpp" />
     <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp" />
+    <ClCompile Include="src\Modules\Graphics\Switch.cpp" />
     <ClCompile Include="src\Modules\Graphics\Window.cpp" />
     <ClCompile Include="src\Modules\Input\Input.cpp" />
     <ClCompile Include="src\Systems\Systems.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="src\Modules\Graphics\Shader.h" />
     <ClInclude Include="src\Modules\Graphics\Slider.h" />
     <ClInclude Include="src\Modules\Graphics\SpriteSheet.h" />
+    <ClInclude Include="src\Modules\Graphics\Switch.h" />
     <ClInclude Include="src\Modules\Graphics\Window.h" />
     <ClInclude Include="src\Modules\Input\Command.h" />
     <ClInclude Include="src\Modules\Input\Cursor.h" />

@@ -18,7 +18,16 @@ class Envelope
         float getValue(float timeDelta_s, bool pressed);
 
         // Get points of the envelope
-        std::vector<glm::vec2> &getPoints();
+        std::vector<glm::vec2> &getPoints()
+        {
+            return _points;
+        }
+
+        // Get loop flag of the envelope
+        bool &getLoop()
+        {
+            return _loopEnabledFlag;
+        }
 
     private:
         // Decay time (maybe will be settable in the future)
@@ -32,6 +41,9 @@ class Envelope
 
         // Variable to keep track of whether the key is pressed or not
         bool _isPressedFlag;
+
+        // Flag to indicate whether the envelope should loop
+        bool _loopEnabledFlag;
 
         // Points defining the envelope
         std::vector<glm::vec2> _points;

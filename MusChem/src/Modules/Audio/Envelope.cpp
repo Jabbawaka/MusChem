@@ -3,6 +3,7 @@
 #include "Modules/Audio/Envelope.h"
 
 // Project include files
+#include "GLogger/GLogger.h"
 
 // System include files
 #include <vector>
@@ -15,6 +16,7 @@ Envelope::Envelope()
     _points.push_back(glm::vec2(0.0f, 0.0f));
     _points.push_back(glm::vec2(1.0f, 0.0f));
     _nextPoint = 1;
+    _loopEnabledFlag = false;
 }
 
 void Envelope::setData
@@ -27,6 +29,17 @@ void Envelope::setData
 
 float Envelope::getValue(float timeDelta_s, bool pressed)
 {
+    if(_loopEnabledFlag == true)
+    {
+        _points.back().y = _points.front().y;
+        // Consume all exceeding time
+        while(timeDelta_s > _points.back().x - _points.front().x)
+        {
+            timeDelta_s -= _points.back().x - _points.front().x;
+            _nextPoint = 0;
+        }
+    }
+
     if(pressed == true)
     {
         if(timeDelta_s > _points[_points.size() - 2].x)
@@ -59,9 +72,4 @@ float Envelope::getValue(float timeDelta_s, bool pressed)
     }
 
     return _currValue;
-}
-
-std::vector<glm::vec2> &Envelope::getPoints()
-{
-    return _points;
 }

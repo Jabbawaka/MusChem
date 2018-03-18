@@ -8,6 +8,7 @@
 
 // System include files
 
+
 class Slider
 {
     public:
@@ -16,7 +17,7 @@ class Slider
 
         // Regular constructor
         Slider
-           (float *p_value,
+           (float *p_value, bool resetFlag,
             glm::vec2 pos_pix, float length_pix, glm::vec2 limits);
 
         // Destructor
@@ -43,6 +44,9 @@ class Slider
 
         // Flag indicating whether the slider is being controlled
         bool _isControlledFlag;
+
+        // Flag indicating whether to reset on leave
+        bool _resetOnLeaveFlag;
 
         // Vertex Buffer Object
         GLuint _vbo;

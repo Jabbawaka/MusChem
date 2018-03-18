@@ -7,6 +7,7 @@
 #include "Modules/Graphics/Graph.h"
 #include "Modules/Graphics/Slider.h"
 #include "Modules/Graphics/DiscSlider.h"
+#include "Modules/Graphics/Switch.h"
 #include "Modules/Graphics/Shader.h"
 #include "Modules/Audio/Envelope.h"
 #include "Modules/Audio/Keyboard.h"
@@ -20,19 +21,57 @@
 #define SAMPLE_RATE (44100)
 
 
-typedef struct
+struct sineWave
 {
     Keyboard *p_keyboard;
     float beta;
+    float freqVar;
+    float lastFreqVar;
     float numModRatio;
     float denModRatio;
+
+    // Filter stuff
+    float cutOffFreq_Hz;
+    float qParam_1;
+    float omega;
+    float bet;
+    float gamma;
+
+    float a0, a1, a2, b1, b2;
+    float x_n1, x_n2, y_n1, y_n2;
+
 
     Envelope volEnv;
     Envelope betEnv;
 
     unsigned int frameTime;
 
-} sineWave;
+    sineWave()
+    {
+        beta = 0.0f;
+        numModRatio = 0.0f;
+        denModRatio = 1.0f;
+        frameTime = 0;
+
+        // Filter
+        cutOffFreq_Hz = 8000.0f;
+        qParam_1 = sqrt(2.0f);
+        omega = 2.0f * PI * cutOffFreq_Hz / (float)SAMPLE_RATE;
+        bet = ((1.0f - qParam_1 / 2.0f * sin(omega)) / (1.0f + qParam_1 / 2.0f * sin(omega))) / 2.0f;
+        gamma = (0.5f + bet) * cos(omega);
+        
+        a0 = (0.5f + bet + gamma) / 2.0f;
+        a1 = 0.5f + bet - gamma;
+        a2 = a0;
+        b1 = -2 * gamma;
+        b2 = 2 * bet;
+
+        x_n1 = 0.0f;
+        x_n2 = 0.0f;
+        y_n1 = 0.0f;
+        y_n2 = 0.0f;
+    }
+};
 
 
 typedef int PaStreamCallback
@@ -56,6 +95,8 @@ static int playSin
     float *p_out = (float *) p_outputBuffer;
 
     (void) p_inputBuffer; /* Prevent unused variable warning */
+    (void) p_timeInfo;
+    (void) statusFlags;
     float out;
     int onKeys;
     int time;
@@ -121,6 +162,26 @@ static int playSin
         {
             out = 0.0f;
         }
+
+        // Calculate filter
+        float filterOut =
+            p_data->a0 * out + p_data->a1 * p_data->x_n1 + p_data->a2 * p_data->x_n2 -
+            p_data->b1 * p_data->y_n1 - p_data->b2 * p_data->y_n2;
+
+        p_data->y_n2 = p_data->y_n1;
+        p_data->y_n1 = filterOut;
+        p_data->x_n2 = p_data->x_n1;
+        p_data->x_n1 = out;
+        out = filterOut;
+
+        if(out > 1.0f)
+        {
+            out = 1.0f;
+        }
+        else if(out < -1.0f)
+        {
+            out = -1.0f;
+        }
         
         p_data->frameTime++;
 
@@ -151,6 +212,8 @@ int main(int argc, char *argv[])
     sineWave data;
     data.p_keyboard = &keyboard;
     data.beta = 0.0f;
+    data.freqVar = 1.0f;
+    data.lastFreqVar = 1.0f;
     data.numModRatio = 0.0f;
     data.denModRatio = 1.0f;
     data.frameTime = 0;
@@ -172,26 +235,30 @@ int main(int argc, char *argv[])
     // ---- GRAPHICS ----
     // Sliders
     Slider betSlider
-       (&data.beta,
-        glm::vec2(-190.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
+       (&data.beta, false,
+        glm::vec2(-160.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f));
     DiscSlider numModSlider
        (&data.numModRatio,
-        glm::vec2(-190.0f, -120.0f), 110.0f, glm::vec2(0.0f, 10.0f), 1.0f);
+        glm::vec2(-135.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f), 1.0f);
     DiscSlider denModSlider
-       (&data.denModRatio,
-        glm::vec2(-165.0f, -120.0f), 110.0f, glm::vec2(0.0f, 10.0f), 1.0f);
+    (&data.denModRatio,
+        glm::vec2(-110.0f, 0.0f), 110.0f, glm::vec2(0.0f, 10.0f), 1.0f);
 
     // Graphs
     Graph volGraph
        (data.volEnv.getPoints(),
-        glm::vec2(-410.0f, 120.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(-380.0f, 120.0f), glm::vec2(200.0f, 110.0f),
         glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.2f, 0.25f));
+        glm::vec2(0.125f, 0.25f));
     Graph betaGraph
        (data.betEnv.getPoints(),
-        glm::vec2(-410.0f, 0.0f), glm::vec2(200.0f, 110.0f),
+        glm::vec2(-380.0f, 0.0f), glm::vec2(200.0f, 110.0f),
         glm::vec2(0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
-        glm::vec2(0.2f, 0.25f));
+        glm::vec2(0.125f, 0.25f));
+
+    // Switches
+    Switch volSwitch(data.volEnv.getLoop(), glm::vec2(-410.0f, 200.0f));
+    Switch betSwitch(data.betEnv.getLoop(), glm::vec2(-410.0f, 80.0f));
 
     // Open an audio I/O stream
     GLOG_MSG("Opening IO stream... ");
@@ -227,9 +294,13 @@ int main(int argc, char *argv[])
         volGraph.update();
         betaGraph.update();
 
+        volSwitch.update();
+        betSwitch.update();
+
         // ---- RENDER ----
         graphics.beginRender();
 
+        // This bit is quite hacky
         for(unsigned int iKey = 0; iKey < keyboard.getKeys().size(); iKey++)
         {
             Key key = keyboard.getKeys()[iKey];
@@ -238,12 +309,36 @@ int main(int argc, char *argv[])
                 float xTime_s =
                     (float)(data.frameTime - key._timePress_frame) /
                     (float)SAMPLE_RATE;
-                if(xTime_s > 1.0f)
+
+                float volTime_s = xTime_s;
+                float betTime_s = xTime_s;
+
+                if(data.volEnv.getLoop() == true)
                 {
-                    xTime_s = 1.0f;
+                    while(volTime_s > 1.0f)
+                    {
+                        volTime_s -= 1.0f;
+                    }
                 }
-                volGraph.renderVert(xTime_s);
-                betaGraph.renderVert(xTime_s);
+                if(data.betEnv.getLoop() == true)
+                {
+                    while(betTime_s > 1.0f)
+                    {
+                        betTime_s -= 1.0f;
+                    }
+                }
+
+                if(volTime_s > 1.0f)
+                {
+                    volTime_s = 1.0f;
+                }
+                if(betTime_s > 1.0f)
+                {
+                    betTime_s = 1.0f;
+                }
+
+                volGraph.renderVert(volTime_s);
+                betaGraph.renderVert(betTime_s);
             }
         }
         volGraph.render(glm::vec3(0.2f, 0.5f, 0.2f));
@@ -252,6 +347,9 @@ int main(int argc, char *argv[])
         betSlider.render();
         numModSlider.render();
         denModSlider.render();
+
+        volSwitch.render();
+        betSwitch.render();
 
         graphics.endRender();
 
