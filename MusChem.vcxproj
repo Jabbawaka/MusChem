@@ -25,14 +25,14 @@
     <ClCompile Include="src\Modules\Audio\Envelope.cpp" />
     <ClCompile Include="src\Modules\Audio\Keyboard.cpp" />
     <ClCompile Include="src\Modules\Graphics\Camera.cpp" />
-    <ClCompile Include="src\Modules\Graphics\DiscSlider.cpp" />
-    <ClCompile Include="src\Modules\Graphics\Graph.cpp" />
     <ClCompile Include="src\Modules\Graphics\Graphics.cpp" />
     <ClCompile Include="src\Modules\Graphics\Shader.cpp" />
-    <ClCompile Include="src\Modules\Graphics\Slider.cpp" />
     <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp" />
-    <ClCompile Include="src\Modules\Graphics\Switch.cpp" />
     <ClCompile Include="src\Modules\Graphics\Window.cpp" />
+    <ClCompile Include="src\Modules\GUI\DiscSlider.cpp" />
+    <ClCompile Include="src\Modules\GUI\Graph.cpp" />
+    <ClCompile Include="src\Modules\GUI\Slider.cpp" />
+    <ClCompile Include="src\Modules\GUI\Switch.cpp" />
     <ClCompile Include="src\Modules\Input\Input.cpp" />
     <ClCompile Include="src\Systems\Systems.cpp" />
   </ItemGroup>
@@ -47,14 +47,14 @@
     <ClInclude Include="src\Modules\Audio\Keyboard.h" />
     <ClInclude Include="src\Modules\Graphics\Camera.h" />
     <ClInclude Include="src\Modules\Graphics\Constants.h" />
-    <ClInclude Include="src\Modules\Graphics\DiscSlider.h" />
-    <ClInclude Include="src\Modules\Graphics\Graph.h" />
     <ClInclude Include="src\Modules\Graphics\Graphics.h" />
     <ClInclude Include="src\Modules\Graphics\Shader.h" />
-    <ClInclude Include="src\Modules\Graphics\Slider.h" />
     <ClInclude Include="src\Modules\Graphics\SpriteSheet.h" />
-    <ClInclude Include="src\Modules\Graphics\Switch.h" />
     <ClInclude Include="src\Modules\Graphics\Window.h" />
+    <ClInclude Include="src\Modules\GUI\DiscSlider.h" />
+    <ClInclude Include="src\Modules\GUI\Graph.h" />
+    <ClInclude Include="src\Modules\GUI\Slider.h" />
+    <ClInclude Include="src\Modules\GUI\Switch.h" />
     <ClInclude Include="src\Modules\Input\Command.h" />
     <ClInclude Include="src\Modules\Input\Cursor.h" />
     <ClInclude Include="src\Modules\Input\Input.h" />

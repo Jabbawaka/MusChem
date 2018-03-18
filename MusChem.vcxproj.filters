@@ -33,25 +33,13 @@
     <ClCompile Include="src\Modules\Graphics\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Modules\Graphics\DiscSlider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Modules\Graphics\Graph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Modules\Graphics\Graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Modules\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Modules\Graphics\Slider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Modules\Graphics\SpriteSheet.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Modules\Graphics\Switch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Modules\Graphics\Window.cpp">
@@ -61,6 +49,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Systems\Systems.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\GUI\DiscSlider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\GUI\Graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\GUI\Slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Modules\GUI\Switch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Systems\DebugModules.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Modules\Graphics\DiscSlider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Modules\Audio\Envelope.h">
@@ -107,9 +104,6 @@
     <ClInclude Include="src\Generic\GParser\GParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Modules\Graphics\Graph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Modules\Graphics\Graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -125,13 +119,7 @@
     <ClInclude Include="src\Modules\Graphics\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Modules\Graphics\Slider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Modules\Graphics\SpriteSheet.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Modules\Graphics\Switch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Modules\Text\Text.h">
@@ -141,6 +129,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Modules\Graphics\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Modules\GUI\DiscSlider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Modules\GUI\Graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Modules\GUI\Slider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Modules\GUI\Switch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

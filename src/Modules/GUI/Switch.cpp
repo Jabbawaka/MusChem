@@ -1,5 +1,5 @@
 // Self include files
-#include "Modules/Graphics/Switch.h"
+#include "Modules/GUI/Switch.h"
 
 // Project include files
 #include "GUtils.h"

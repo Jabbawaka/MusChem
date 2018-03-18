@@ -1,5 +1,5 @@
 // Self include files
-#include "Modules/Graphics/Slider.h"
+#include "Modules/GUI/Slider.h"
 
 // Project include files
 #include "GUtils.h"

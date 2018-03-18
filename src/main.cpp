@@ -4,10 +4,10 @@
 
 #include "Systems/BasicModules.h"
 
-#include "Modules/Graphics/Graph.h"
-#include "Modules/Graphics/Slider.h"
-#include "Modules/Graphics/DiscSlider.h"
-#include "Modules/Graphics/Switch.h"
+#include "Modules/GUI/Graph.h"
+#include "Modules/GUI/Slider.h"
+#include "Modules/GUI/DiscSlider.h"
+#include "Modules/GUI/Switch.h"
 #include "Modules/Graphics/Shader.h"
 #include "Modules/Audio/Envelope.h"
 #include "Modules/Audio/Keyboard.h"
