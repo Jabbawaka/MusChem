@@ -58,6 +58,9 @@
     <ClInclude Include="src\Modules\Input\Command.h" />
     <ClInclude Include="src\Modules\Input\Cursor.h" />
     <ClInclude Include="src\Modules\Input\Input.h" />
+    <ClInclude Include="src\Modules\Text\Font.h" />
+    <ClInclude Include="src\Modules\Text\Text.h" />
+    <ClInclude Include="src\Modules\Text\TextBoard.h" />
     <ClInclude Include="src\Systems\BasicModules.h" />
     <ClInclude Include="src\Systems\DebugModules.h" />
   </ItemGroup>
@@ -121,8 +124,10 @@
     <LibraryPath>C:\Projects\MusChem\MusChem\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Projects\MusChem\MusChem\include;C:\Projects\MusChem\MusChem\src\;C:\Projects\MusChem\MusChem\src\Generic;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Projects\MusChem\MusChem\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Projects\MusChem\include;C:\Projects\MusChem\src\;C:\Projects\MusChem\src\Generic;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Projects\MusChem\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <IntDir>$(SolutionDir)objs\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -163,6 +168,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>portaudio_x86.lib;glfw3.lib;glew32.lib;SOIL.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <BuildLog>
+      <Path>$(SolutionDir)objs\$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
